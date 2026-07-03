@@ -18,61 +18,46 @@ ICONS = getattr(ft, "Icons", ft.icons)
 COLORS = getattr(ft, "Colors", ft.colors)
 
 
-class NavigationItem:
-    def __init__(self, icon, label, page_class):
-        self.icon = icon
-        self.label = label
-        self.page_class = page_class
-
-
 NAV_ITEMS = [
-    NavigationItem(ICONS.DASHBOARD, "لوحة التحكم", DashboardPage),
-    NavigationItem(ICONS.SPORTS_ESPORTS, "المحطات", StationsPage),
-    NavigationItem(ICONS.PLAY_CIRCLE, "الجلسات", SessionsPage),
-    NavigationItem(ICONS.PEOPLE, "العملاء", CustomersPage),
-    NavigationItem(ICONS.RECEIPT_LONG, "الفواتير", BillingPage),
-    NavigationItem(ICONS.INVENTORY_2, "المخزون", InventoryPage),
-    NavigationItem(ICONS.BADGE, "الموظفين", EmployeesPage),
-    NavigationItem(ICONS.BAR_CHART, "التقارير", ReportsPage),
-    NavigationItem(ICONS.EMOJI_EVENTS, "البطولات", TournamentsPage),
-    NavigationItem(ICONS.EVENT, "الحجوزات", ReservationsPage),
-    NavigationItem(ICONS.SETTINGS, "الإعدادات", SettingsPage),
+    ("لوحة التحكم", getattr(ICONS, "DASHBOARD", "dashboard"), DashboardPage),
+    ("المحطات", getattr(ICONS, "SPORTS_ESPORTS", "sports_esports"), StationsPage),
+    ("الجلسات", getattr(ICONS, "PLAY_CIRCLE", "play_circle"), SessionsPage),
+    ("العملاء", getattr(ICONS, "PEOPLE", "people"), CustomersPage),
+    ("الفواتير", getattr(ICONS, "RECEIPT_LONG", "receipt_long"), BillingPage),
+    ("المخزون", getattr(ICONS, "INVENTORY_2", "inventory_2"), InventoryPage),
+    ("الموظفين", getattr(ICONS, "BADGE", "badge"), EmployeesPage),
+    ("التقارير", getattr(ICONS, "BAR_CHART", "bar_chart"), ReportsPage),
+    ("البطولات", getattr(ICONS, "EMOJI_EVENTS", "emoji_events"), TournamentsPage),
+    ("الحجوزات", getattr(ICONS, "EVENT", "event"), ReservationsPage),
+    ("الإعدادات", getattr(ICONS, "SETTINGS", "settings"), SettingsPage),
 ]
 
 
-class CafeManager:
+class App:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.current_page = None
+        self.current_page_instance = None
         self.nav_buttons = []
-        self.content_container = ft.Container(expand=True)
-        self._build_sidebar()
-        self._build_layout()
+        self.content_column = ft.Column(spacing=0, expand=True)
 
-    def _build_sidebar(self):
-        nav_btns = []
-        for i, item in enumerate(NAV_ITEMS):
+        # Build sidebar
+        self.nav_buttons = []
+        for i, (label, icon, _) in enumerate(NAV_ITEMS):
             btn = ft.ElevatedButton(
                 content=ft.Row([
-                    ft.Icon(item.icon, size=20, color=COLORS.WHITE),
-                    ft.Text(item.label, size=13, color=COLORS.WHITE, weight=ft.FontWeight.W_500),
+                    ft.Icon(icon, size=20, color=COLORS.WHITE),
+                    ft.Text(label, size=13, color=COLORS.WHITE, weight=ft.FontWeight.W_500),
                 ], spacing=12),
-                on_click=lambda e, idx=i: self.navigate_to(idx),
-                style=ft.ButtonStyle(
-                    bgcolor=COLORS.TRANSPARENT,
-                    padding=ft.padding.symmetric(horizontal=16, vertical=12),
-                    shape=ft.RoundedRectangleBorder(radius=10),
-                ),
+                on_click=lambda e, idx=i: self.go(idx),
             )
-            nav_btns.append(btn)
-        self.nav_buttons = nav_btns
+            self.nav_buttons.append(btn)
 
-        self.sidebar = ft.Container(
+        sidebar = ft.Container(
             content=ft.Column([
                 ft.Container(
                     content=ft.Column([
                         ft.Container(
-                            content=ft.Icon(ICONS.SPORTS_ESPORTS, size=36, color=COLORS.WHITE),
+                            content=ft.Icon(NAV_ITEMS[1][1], size=36, color=COLORS.WHITE),
                             width=50, height=50,
                             bgcolor=AppColors.PRIMARY,
                             border_radius=14,
@@ -87,23 +72,22 @@ class CafeManager:
                 ft.Container(height=8),
                 ft.Column(controls=self.nav_buttons, spacing=2, scroll=ft.ScrollMode.AUTO, expand=True),
                 ft.Divider(color="#3c4043"),
-                ft.Container(
-                    content=ft.Text("v1.0", size=11, color="#9aa0a6", text_align=ft.TextAlign.CENTER),
-                    padding=10,
-                ),
+                ft.Container(content=ft.Text("v1.0", size=11, color="#9aa0a6"), padding=10),
             ], spacing=0),
             width=220,
             bgcolor=AppColors.SIDEBAR_BG,
         )
 
-    def _build_layout(self):
-        self.top_bar = ft.Container(
+        # Top bar
+        top_bar = ft.Container(
             content=ft.Row([
                 ft.Text("Marouf PlayStation Cafe Manager", size=14, color=AppColors.TEXT_SECONDARY),
                 ft.Container(expand=True),
                 ft.IconButton(
-                    icon=ICONS.REFRESH, icon_color=AppColors.TEXT_SECONDARY,
-                    tooltip="تحديث", on_click=self._on_refresh,
+                    icon=getattr(ICONS, "REFRESH", "refresh"),
+                    icon_color=AppColors.TEXT_SECONDARY,
+                    tooltip="تحديث",
+                    on_click=lambda e: self._refresh(),
                 ),
             ]),
             padding=ft.padding.symmetric(horizontal=20, vertical=10),
@@ -111,78 +95,60 @@ class CafeManager:
             border=ft.border.only(bottom=ft.BorderSide(1, AppColors.BORDER)),
         )
 
-        self.main_column = ft.Column([
-            self.top_bar,
-            self.content_container,
-        ], spacing=0, expand=True)
+        # Main layout
+        self.main_col = ft.Column([top_bar, self.content_column], spacing=0, expand=True)
+        main_area = ft.Container(content=self.main_col, expand=True, bgcolor=AppColors.BG)
 
-        self.main_container = ft.Container(
-            content=self.main_column,
-            expand=True,
-            bgcolor=AppColors.BG,
-        )
+        self.layout = ft.Row([sidebar, main_area], spacing=0, expand=True)
 
-        self.layout = ft.Row([self.sidebar, self.main_container], spacing=0, expand=True)
-
-    def _on_refresh(self, e=None):
-        if self.current_page and hasattr(self.current_page, 'refresh'):
-            try:
-                self.current_page.refresh()
-            except Exception:
-                pass
-            self.page.update()
-
-    def navigate_to(self, index):
-        # Update nav button styles
+    def go(self, index):
+        # Highlight active button
         for i, btn in enumerate(self.nav_buttons):
             if i == index:
-                btn.style = ft.ButtonStyle(
-                    bgcolor=AppColors.PRIMARY,
-                    padding=ft.padding.symmetric(horizontal=16, vertical=12),
-                    shape=ft.RoundedRectangleBorder(radius=10),
-                )
+                btn.style = ft.ButtonStyle(bgcolor=AppColors.PRIMARY)
             else:
-                btn.style = ft.ButtonStyle(
-                    bgcolor=COLORS.TRANSPARENT,
-                    padding=ft.padding.symmetric(horizontal=16, vertical=12),
-                    shape=ft.RoundedRectangleBorder(radius=10),
-                )
+                btn.style = ft.ButtonStyle(bgcolor=COLORS.TRANSPARENT)
+            btn.update()
 
-        # Build the page
-        item = NAV_ITEMS[index]
-        page_instance = item.page_class(self.page)
-        page_instance.build()
-        self.current_page = page_instance
+        # Build page
+        _, _, page_cls = NAV_ITEMS[index]
+        self.current_page_instance = page_cls(self.page)
+        self.current_page_instance.build()
 
-        # Swap content
-        self.content_container.content = page_instance
+        # Replace content
+        self.content_column.controls.clear()
+        self.content_column.controls.append(self.current_page_instance)
         self.page.update()
 
-        # Refresh data after render
-        def do_refresh():
-            if hasattr(page_instance, 'refresh'):
-                try:
-                    page_instance.refresh()
-                    self.page.update()
-                except Exception:
-                    pass
+        # Load data
+        def load():
+            try:
+                self.current_page_instance.refresh()
+                self.page.update()
+            except Exception:
+                pass
+        self.page.run_task(self._delayed, load)
 
-        self.page.run_task(self._delayed_refresh, do_refresh)
+    def _refresh(self):
+        if self.current_page_instance and hasattr(self.current_page_instance, 'refresh'):
+            try:
+                self.current_page_instance.refresh()
+                self.page.update()
+            except Exception:
+                pass
 
     @staticmethod
-    async def _delayed_refresh(fn):
-        await asyncio.sleep(0.5)
+    async def _delayed(fn):
+        await asyncio.sleep(0.3)
         fn()
 
     async def auto_refresh(self):
         while True:
             await asyncio.sleep(30)
-            if self.current_page and isinstance(self.current_page, DashboardPage):
-                try:
-                    self.current_page.refresh()
-                    self.page.update()
-                except Exception:
-                    pass
+            try:
+                self._refresh()
+            except Exception:
+                pass
 
 
 def main(page: ft.Page):
@@ -198,10 +164,9 @@ def main(page: ft.Page):
     page.bgcolor = AppColors.BG
     page.theme = ft.Theme(color_scheme_seed=AppColors.PRIMARY, font_family="Segoe UI")
 
-    app = CafeManager(page)
+    app = App(page)
     page.add(app.layout)
-    page.update()
-    app.navigate_to(0)
+    app.go(0)
     page.run_task(app.auto_refresh)
 
 
