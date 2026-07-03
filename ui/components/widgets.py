@@ -168,7 +168,7 @@ def make_text_field(label: str, value="", expand=False, **kwargs):
     return field
 
 
-def make_dropdown(label: str, options: list, value=None, expand=False):
+def make_dropdown(label: str, options: list, value=None, expand=False, width=None):
     dd = ft.Dropdown(
         label=label,
         options=[ft.dropdown.Option(key=o[0], text=o[1]) for o in options],
@@ -176,6 +176,7 @@ def make_dropdown(label: str, options: list, value=None, expand=False):
         border_radius=10,
         filled=True,
         expand=expand,
+        width=width,
     )
     return dd
 

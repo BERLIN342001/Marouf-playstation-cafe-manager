@@ -14,10 +14,10 @@ class BillingPage(PageTemplate):
         super().__init__(page, "الفواتير والمحاسبة")
 
     def build_content(self):
-        self.date_field = ft.DateField(
-            label="التاريخ",
-            value=datetime.now(),
-            on_change=self.refresh,
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        self.date_field = ft.TextField(
+            label="التاريخ (YYYY-MM-DD)",
+            value=today_str,
             border_radius=10,
             filled=True,
             width=200,
@@ -45,7 +45,11 @@ class BillingPage(PageTemplate):
     def refresh(self, e=None):
         db = SessionLocal()
         try:
-            sel_date = self.date_field.value or datetime.now()
+            date_str = self.date_field.value
+            try:
+                sel_date = datetime.strptime(date_str, "%Y-%m-%d")
+            except (ValueError, TypeError):
+                sel_date = datetime.now()
             total, payments = get_daily_revenue(db, sel_date)
             self.total_text.value = f"الإجمالي: {format_currency(total)}"
 

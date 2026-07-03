@@ -103,9 +103,9 @@ class ReservationsPage(PageTemplate):
 
             cust_dd = make_dropdown("العميل", cust_opts)
             st_dd = make_dropdown("المحطة", st_opts)
-            date_f = ft.DateTimePicker(
-                label="تاريخ ووقت الحجز",
-                value=datetime.now(),
+            date_f = ft.TextField(
+                label="تاريخ ووقت الحجز (YYYY-MM-DD HH:MM)",
+                value=datetime.now().strftime("%Y-%m-%d %H:%M"),
                 border_radius=10, filled=True,
             )
             dur_f = make_text_field("المدة (دقيقة)", "60")
@@ -114,10 +114,14 @@ class ReservationsPage(PageTemplate):
             def save(e):
                 db2 = SessionLocal()
                 try:
+                    try:
+                        res_dt = datetime.strptime(date_f.value, "%Y-%m-%d %H:%M")
+                    except (ValueError, TypeError):
+                        res_dt = datetime.now()
                     create_reservation(db2,
                         customer_id=int(cust_dd.value),
                         station_id=int(st_dd.value),
-                        reserved_date=date_f.value,
+                        reserved_date=res_dt,
                         duration_minutes=int(dur_f.value or 60),
                         notes=notes_f.value or None)
                     dlg.open = False
