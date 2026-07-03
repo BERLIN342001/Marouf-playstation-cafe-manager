@@ -1,0 +1,3 @@
+flet==0.25.1
+flet-fastapi==0.25.1
+SQLAlchemy==2.0.35
