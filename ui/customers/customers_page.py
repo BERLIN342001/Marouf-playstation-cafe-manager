@@ -43,7 +43,7 @@ class CustomersPage(PageTemplate):
             if not customers:
                 self.customers_list.controls = [
                     ft.Container(content=ft.Text("لا يوجد عملاء", size=15,
-                        color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                        color=AppColors.TEXT_SECONDARY),
                         padding=40, alignment=ft.alignment.center, expand=True)
                 ]
             else:
@@ -117,7 +117,7 @@ class CustomersPage(PageTemplate):
 
             dlg = ft.AlertDialog(
                 title=ft.Text("تعديل عميل" if is_edit else "إضافة عميل جديد",
-                              text_direction=ft.TextDirection.RTL),
+                              ),
                 content=ft.Column([name_f, phone_f, age_f, notes_f], spacing=12, width=420),
                 actions=[
                     ft.TextButton("إلغاء", on_click=lambda e: close(e)),
@@ -165,7 +165,7 @@ class CustomersPage(PageTemplate):
 
             dlg = ft.AlertDialog(
                 title=ft.Text(f"شحن رصيد - {customer.name}",
-                              text_direction=ft.TextDirection.RTL),
+                              ),
                 content=ft.Column([info, amount_f], spacing=12, width=350),
                 actions=[
                     ft.TextButton("إلغاء", on_click=lambda e: close(e)),

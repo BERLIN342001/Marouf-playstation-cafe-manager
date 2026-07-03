@@ -48,7 +48,7 @@ class InventoryPage(PageTemplate):
             rows = []
             if low_stock:
                 rows.append(ft.Text("⚠️ أصناف ناقصة", size=14, weight=ft.FontWeight.BOLD,
-                                    color=AppColors.DANGER, text_direction=ft.TextDirection.RTL))
+                                    color=AppColors.DANGER))
                 for i in low_stock:
                     rows.append(self._make_item_card(i, is_low=True))
 
@@ -56,13 +56,13 @@ class InventoryPage(PageTemplate):
                 if low_stock:
                     rows.append(ft.Divider(height=15))
                     rows.append(ft.Text("المخزون", size=14, weight=ft.FontWeight.BOLD,
-                                        color=AppColors.TEXT, text_direction=ft.TextDirection.RTL))
+                                        color=AppColors.TEXT))
                 for i in normal:
                     rows.append(self._make_item_card(i, is_low=False))
 
             if not items_data:
                 rows = [ft.Container(content=ft.Text("المخزون فارغ", size=15,
-                    color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                    color=AppColors.TEXT_SECONDARY),
                     padding=40, alignment=ft.alignment.center, expand=True)]
 
             self.inventory_list.controls = rows
@@ -120,7 +120,7 @@ class InventoryPage(PageTemplate):
                 db.close()
 
         dlg = ft.AlertDialog(
-            title=ft.Text("إضافة صنف جديد", text_direction=ft.TextDirection.RTL),
+            title=ft.Text("إضافة صنف جديد"),
             content=ft.Column([name_f, cat_dd, ft.Row([qty_f, min_f], spacing=12), price_f],
                               spacing=12, width=420),
             actions=[
@@ -151,7 +151,7 @@ class InventoryPage(PageTemplate):
             finally:
                 db.close()
         dlg = ft.AlertDialog(
-            title=ft.Text("تحديث الكمية", text_direction=ft.TextDirection.RTL),
+            title=ft.Text("تحديث الكمية"),
             content=ft.Column([qty_f], spacing=12, width=300),
             actions=[
                 ft.TextButton("إلغاء", on_click=lambda e: close(e)),

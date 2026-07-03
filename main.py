@@ -114,7 +114,7 @@ def main(page: ft.Page):
     # Page settings
     page.title = "Marouf - PlayStation Cafe Manager"
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.text_direction = ft.TextDirection.RTL
+    page.rtl = True
     page.window.width = 1280
     page.window.height = 800
     page.window.min_width = 1024

@@ -69,7 +69,7 @@ class SessionsPage(PageTemplate):
                     content=ft.Column([
                         ft.Icon(ft.icons.PLAY_CIRCLE_OUTLINE, size=48, color=AppColors.TEXT_SECONDARY),
                         ft.Text("لا توجد جلسات نشطة", size=15,
-                                color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                                color=AppColors.TEXT_SECONDARY),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         alignment=ft.MainAxisAlignment.CENTER),
                     padding=40, alignment=ft.alignment.center, expand=True)
@@ -129,7 +129,7 @@ class SessionsPage(PageTemplate):
         if not sessions:
             self.history_list.controls = [
                 ft.Container(content=ft.Text("لا توجد جلسات سابقة", size=15,
-                    color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                    color=AppColors.TEXT_SECONDARY),
                     padding=40, alignment=ft.alignment.center, expand=True)
             ]
             return
@@ -197,7 +197,7 @@ class SessionsPage(PageTemplate):
                     show_snackbar(self.page, str(ex), AppColors.DANGER)
 
             dlg = ft.AlertDialog(
-                title=ft.Text("بدء جلسة جديدة", text_direction=ft.TextDirection.RTL),
+                title=ft.Text("بدء جلسة جديدة"),
                 content=ft.Column([station_dd, customer_dd, package_dd], spacing=12, width=450),
                 actions=[
                     ft.TextButton("إلغاء", on_click=lambda e: close(e)),
@@ -239,7 +239,7 @@ class SessionsPage(PageTemplate):
                 ft.Text(f"المدة: {format_duration(dur)}", size=15, weight=ft.FontWeight.W_600),
                 ft.Text(f"التكلفة: {format_currency(cost)}", size=15, weight=ft.FontWeight.W_600,
                         color=AppColors.DANGER),
-            ], spacing=6, text_direction=ft.TextDirection.RTL)
+            ], spacing=6)
 
             def save(e):
                 try:
@@ -254,7 +254,7 @@ class SessionsPage(PageTemplate):
                     show_snackbar(self.page, str(ex), AppColors.DANGER)
 
             dlg = ft.AlertDialog(
-                title=ft.Text("إنهاء الجلسة", text_direction=ft.TextDirection.RTL),
+                title=ft.Text("إنهاء الجلسة"),
                 content=ft.Column([info, method_dd, discount_field], spacing=12, width=400),
                 actions=[
                     ft.TextButton("إلغاء", on_click=lambda e: close(e)),

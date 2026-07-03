@@ -52,7 +52,7 @@ class BillingPage(PageTemplate):
             if not payments:
                 self.payments_list.controls = [
                     ft.Container(content=ft.Text("لا توجد مدفوعات في هذا اليوم", size=15,
-                        color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                        color=AppColors.TEXT_SECONDARY),
                         padding=40, alignment=ft.alignment.center, expand=True)
                 ]
             else:

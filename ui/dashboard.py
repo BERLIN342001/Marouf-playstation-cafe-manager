@@ -38,7 +38,7 @@ class DashboardPage(PageTemplate):
         return ft.Column(
             controls=[
                 ft.Text("الجلسات النشطة", size=18, weight=ft.FontWeight.BOLD,
-                        color=AppColors.TEXT, text_direction=ft.TextDirection.RTL),
+                        color=AppColors.TEXT),
                 ft.Container(height=10),
                 self.active_sessions_container,
             ],
@@ -87,7 +87,7 @@ class DashboardPage(PageTemplate):
                                 ft.Icon(ft.icons.CHECK_CIRCLE_OUTLINE, size=48, color=AppColors.SUCCESS),
                                 ft.Text("لا توجد جلسات نشطة حالياً", size=15,
                                         color=AppColors.TEXT_SECONDARY,
-                                        text_direction=ft.TextDirection.RTL),
+                                        ),
                             ],
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                             alignment=ft.MainAxisAlignment.CENTER,

@@ -153,7 +153,7 @@ class StationsPage(PageTemplate):
             self.stations_grid.controls = cards if cards else [
                 ft.Container(
                     content=ft.Text("لا توجد محطات", size=15, color=AppColors.TEXT_SECONDARY,
-                                    text_direction=ft.TextDirection.RTL),
+                                    ),
                     alignment=ft.alignment.center,
                     padding=40, expand=True,
                 )
@@ -257,12 +257,12 @@ class StationsPage(PageTemplate):
 
         dlg = ft.AlertDialog(
             title=ft.Text("تعديل محطة" if is_edit else "إضافة محطة جديدة",
-                          text_direction=ft.TextDirection.RTL),
+                          ),
             content=ft.Column(
                 controls=[name_field, console_field, rate_field, controllers_field,
                           ft.Row([vr_field, wheel_field], spacing=20)],
                 spacing=12, width=400,
-                text_direction=ft.TextDirection.RTL,
+                ,
             ),
             actions=[
                 ft.TextButton("إلغاء", on_click=lambda e: close(e)),

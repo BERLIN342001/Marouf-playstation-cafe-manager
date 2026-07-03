@@ -84,7 +84,7 @@ class ReservationsPage(PageTemplate):
                         padding=15)))
             if not items:
                 items = [ft.Container(content=ft.Text("لا توجد حجوزات", size=15,
-                    color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                    color=AppColors.TEXT_SECONDARY),
                     padding=40, alignment=ft.alignment.center, expand=True)]
             self.reservations_list.controls = items
             self.update()
@@ -130,7 +130,7 @@ class ReservationsPage(PageTemplate):
                     db2.close()
 
             dlg = ft.AlertDialog(
-                title=ft.Text("حجز جديد", text_direction=ft.TextDirection.RTL),
+                title=ft.Text("حجز جديد"),
                 content=ft.Column([cust_dd, st_dd, date_f, dur_f, notes_f],
                                   spacing=12, width=420),
                 actions=[

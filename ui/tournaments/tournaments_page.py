@@ -85,7 +85,7 @@ class TournamentsPage(PageTemplate):
                         padding=18)))
             if not items:
                 items = [ft.Container(content=ft.Text("لا توجد بطولات", size=15,
-                    color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                    color=AppColors.TEXT_SECONDARY),
                     padding=40, alignment=ft.alignment.center, expand=True)]
             self.tournaments_list.controls = items
             self.update()
@@ -115,7 +115,7 @@ class TournamentsPage(PageTemplate):
                 db.close()
 
         dlg = ft.AlertDialog(
-            title=ft.Text("إنشاء بطولة جديدة", text_direction=ft.TextDirection.RTL),
+            title=ft.Text("إنشاء بطولة جديدة"),
             content=ft.Column([name_f, game_f, ft.Row([max_f, fee_f], spacing=12), prize_f],
                               spacing=12, width=420),
             actions=[
@@ -157,7 +157,7 @@ class TournamentsPage(PageTemplate):
                     db2.close()
 
             dlg = ft.AlertDialog(
-                title=ft.Text("تسجيل لاعب", text_direction=ft.TextDirection.RTL),
+                title=ft.Text("تسجيل لاعب"),
                 content=ft.Column([cust_dd], spacing=12, width=350),
                 actions=[
                     ft.TextButton("إلغاء", on_click=lambda e: close(e)),
@@ -192,7 +192,7 @@ class TournamentsPage(PageTemplate):
             items = [ft.Text("لا يوجد مشاركين", color=AppColors.TEXT_SECONDARY)]
 
         dlg = ft.AlertDialog(
-            title=ft.Text("المشاركين", text_direction=ft.TextDirection.RTL),
+            title=ft.Text("المشاركين"),
             content=ft.Column(items, spacing=2, width=400),
             actions=[ft.TextButton("إغلاق", on_click=lambda e: close(e))],
         )

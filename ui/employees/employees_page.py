@@ -88,7 +88,7 @@ class EmployeesPage(PageTemplate):
                     padding=12)))
         if not items:
             items = [ft.Container(content=ft.Text("لا يوجد موظفين", size=15,
-                color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                color=AppColors.TEXT_SECONDARY),
                 padding=40, alignment=ft.alignment.center, expand=True)]
         self.employees_list.controls = items
 
@@ -111,7 +111,7 @@ class EmployeesPage(PageTemplate):
                     padding=10)))
         if not items:
             items = [ft.Container(content=ft.Text("لا توجد سجلات", size=15,
-                color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                color=AppColors.TEXT_SECONDARY),
                 padding=40, alignment=ft.alignment.center, expand=True)]
         self.attendance_list.controls = items
 
@@ -151,7 +151,7 @@ class EmployeesPage(PageTemplate):
 
             dlg = ft.AlertDialog(
                 title=ft.Text("تعديل موظف" if is_edit else "إضافة موظف",
-                              text_direction=ft.TextDirection.RTL),
+                              ),
                 content=ft.Column([name_f, phone_f, ft.Row([role_dd, shift_dd], spacing=12), salary_f],
                                   spacing=12, width=420),
                 actions=[

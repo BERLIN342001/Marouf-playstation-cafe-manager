@@ -72,7 +72,7 @@ def make_search_field(on_change=None, placeholder: str = "بحث..."):
         border_radius=10,
         filled=True,
         focused_border_color=AppColors.PRIMARY,
-        text_direction=ft.TextDirection.RTL,
+        ,
         expand=True,
     )
 
@@ -102,7 +102,7 @@ def make_fab(icon, on_click, tooltip=""):
 
 def show_snackbar(page, message: str, color: str = AppColors.PRIMARY):
     snack = ft.SnackBar(
-        content=ft.Text(message, color=ft.colors.WHITE, text_direction=ft.TextDirection.RTL),
+        content=ft.Text(message, color=ft.colors.WHITE),
         bgcolor=color,
     )
     page.overlay.append(snack)
@@ -132,8 +132,8 @@ def make_confirm_dialog(title: str, message: str, on_confirm, page_ref):
         page_ref.update()
 
     dlg = ft.AlertDialog(
-        title=ft.Text(title, text_direction=ft.TextDirection.RTL),
-        content=ft.Text(message, text_direction=ft.TextDirection.RTL),
+        title=ft.Text(title),
+        content=ft.Text(message),
         actions=[
             ft.TextButton("إلغاء", on_click=cancel),
             ft.ElevatedButton("تأكيد", on_click=confirm,
@@ -148,7 +148,7 @@ def make_form_field(label: str, field_widget, expand=False):
     return ft.Column(
         controls=[
             ft.Text(label, size=13, weight=ft.FontWeight.W_600,
-                    color=AppColors.TEXT_SECONDARY, text_direction=ft.TextDirection.RTL),
+                    color=AppColors.TEXT_SECONDARY),
             field_widget,
         ],
         spacing=4,
@@ -156,7 +156,7 @@ def make_form_field(label: str, field_widget, expand=False):
     )
 
 
-def make_text_field(label: str, value="", expand=False, text_direction=ft.TextDirection.RTL, **kwargs):
+def make_text_field(label: str, value="", expand=False, **kwargs):
     field = ft.TextField(
         value=str(value) if value else "",
         border_radius=10,
@@ -185,7 +185,7 @@ def make_section_header(title: str, action_widget=None):
     return ft.Row(
         controls=[
             ft.Text(title, size=18, weight=ft.FontWeight.BOLD,
-                    color=AppColors.TEXT, text_direction=ft.TextDirection.RTL),
+                    color=AppColors.TEXT),
             ft.Container(expand=True),
             action_widget or ft.Container(),
         ],
