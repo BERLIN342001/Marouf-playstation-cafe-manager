@@ -72,7 +72,6 @@ def make_search_field(on_change=None, placeholder: str = "بحث..."):
         border_radius=10,
         filled=True,
         focused_border_color=AppColors.PRIMARY,
-        ,
         expand=True,
     )
 

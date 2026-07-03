@@ -262,7 +262,6 @@ class StationsPage(PageTemplate):
                 controls=[name_field, console_field, rate_field, controllers_field,
                           ft.Row([vr_field, wheel_field], spacing=20)],
                 spacing=12, width=400,
-                ,
             ),
             actions=[
                 ft.TextButton("إلغاء", on_click=lambda e: close(e)),
