@@ -26,7 +26,7 @@ class DashboardPage(PageTemplate):
                         ft.Column([self.stats_container], expand=True, spacing=10),
                     ],
                 ),
-                ft.Divider(height=1, color=AppColors.BORDER, height=20),
+                ft.Container(ft.Divider(color=AppColors.BORDER), height=20),
                 # Active Sessions
                 self.build_active_sessions_section(),
             ],
