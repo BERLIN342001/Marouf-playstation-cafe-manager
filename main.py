@@ -1,174 +1,193 @@
-import asyncio
-import flet as ft
-from database.db import init_db
-from ui.components.widgets import AppColors
-from ui.dashboard import DashboardPage
-from ui.stations.stations_page import StationsPage
-from ui.sessions.sessions_page import SessionsPage
-from ui.customers.customers_page import CustomersPage
-from ui.billing.billing_page import BillingPage
-from ui.inventory.inventory_page import InventoryPage
-from ui.employees.employees_page import EmployeesPage
-from ui.reports.reports_page import ReportsPage
-from ui.tournaments.tournaments_page import TournamentsPage
-from ui.reservations.reservations_page import ReservationsPage
-from ui.settings.settings_page import SettingsPage
+import customtkinter as ctk
+import tkinter as tk
+from tkinter import ttk, messagebox, simpledialog
+from database.db import init_db, SessionLocal
+from services.services import get_dashboard_stats
+import os
 
-ICONS = getattr(ft, "Icons", ft.icons)
-COLORS = getattr(ft, "Colors", ft.colors)
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("blue")
 
-NAV_ITEMS = [
-    ("لوحة التحكم", getattr(ICONS, "DASHBOARD", "dashboard"), DashboardPage),
-    ("المحطات", getattr(ICONS, "SPORTS_ESPORTS", "sports_esports"), StationsPage),
-    ("الجلسات", getattr(ICONS, "PLAY_CIRCLE", "play_circle"), SessionsPage),
-    ("العملاء", getattr(ICONS, "PEOPLE", "people"), CustomersPage),
-    ("الفواتير", getattr(ICONS, "RECEIPT_LONG", "receipt_long"), BillingPage),
-    ("المخزون", getattr(ICONS, "INVENTORY_2", "inventory_2"), InventoryPage),
-    ("الموظفين", getattr(ICONS, "BADGE", "badge"), EmployeesPage),
-    ("التقارير", getattr(ICONS, "BAR_CHART", "bar_chart"), ReportsPage),
-    ("البطولات", getattr(ICONS, "EMOJI_EVENTS", "emoji_events"), TournamentsPage),
-    ("الحجوزات", getattr(ICONS, "EVENT", "event"), ReservationsPage),
-    ("الإعدادات", getattr(ICONS, "SETTINGS", "settings"), SettingsPage),
-]
+PRIMARY = "#1a73e8"
+BG = "#f0f2f5"
+SIDEBAR_BG = "#202124"
+TEXT = "#202124"
+TEXT_SEC = "#5f6368"
+SUCCESS = "#22c55e"
+DANGER = "#ef4444"
+WARNING = "#f59e0b"
+CARD_BG = "#ffffff"
+
+STATUS_COLORS = {
+    "available": SUCCESS, "occupied": DANGER,
+    "maintenance": WARNING, "reserved": "#3b82f6",
+    "active": SUCCESS, "completed": TEXT_SEC,
+    "cancelled": DANGER, "pending": WARNING,
+    "confirmed": "#3b82f6", "registration": "#3b82f6",
+    "in_progress": SUCCESS,
+}
+STATUS_LABELS = {
+    "available": "فارغة", "occupied": "مشغولة",
+    "maintenance": "صيانة", "reserved": "محجوزة",
+    "active": "نشطة", "completed": "مكتملة",
+    "cancelled": "ملغاة", "pending": "قيد الانتظار",
+    "confirmed": "مؤكدة", "registration": "تسجيل",
+    "in_progress": "جارية",
+}
 
 
-def main(page: ft.Page):
-    init_db()
+def fc(amount):
+    return f"{amount:.2f} ج.م"
 
-    page.title = "Marouf - PlayStation Cafe Manager"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.window.width = 1280
-    page.window.height = 800
-    page.window.min_width = 1024
-    page.window.min_height = 600
-    page.bgcolor = AppColors.BG
-    page.theme = ft.Theme(color_scheme_seed=AppColors.PRIMARY, font_family="Segoe UI")
 
-    state = {"current_idx": 0, "current_page": None}
+def fmt_dur(minutes):
+    if minutes is None:
+        return "0:00"
+    return f"{minutes // 60}:{minutes % 60:02d}"
 
-    def build_sidebar():
-        buttons = []
-        for i, (label, icon, _) in enumerate(NAV_ITEMS):
-            is_active = i == state["current_idx"]
-            btn = ft.ElevatedButton(
-                content=ft.Row([
-                    ft.Icon(icon, size=20, color=COLORS.WHITE),
-                    ft.Text(label, size=13, color=COLORS.WHITE, weight=ft.FontWeight.W_500),
-                ], spacing=12),
-                on_click=lambda e, idx=i: navigate(idx),
-                style=ft.ButtonStyle(
-                    bgcolor=AppColors.PRIMARY if is_active else COLORS.TRANSPARENT,
-                ),
+
+def fmt_dt(dt):
+    if dt is None:
+        return "-"
+    return dt.strftime("%Y-%m-%d %H:%M")
+
+
+class App(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("Marouf - PlayStation Cafe Manager")
+        self.geometry("1280x800")
+        self.minsize(1024, 600)
+        self.configure(fg_color=BG)
+
+        self.pages = {}
+        self.current_frame = None
+
+        self._build_sidebar()
+        self._build_content()
+        self._load_all_pages()
+        self.show_page("dashboard")
+
+    def _build_sidebar(self):
+        self.sidebar = ctk.CTkFrame(self, width=220, corner_radius=0, fg_color=SIDEBAR_BG)
+
+        # Logo
+        logo_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        logo_frame.pack(pady=20, padx=16)
+
+        icon_label = ctk.CTkLabel(logo_frame, text="🎮", font=("", 36), text_color="white")
+        icon_label.pack()
+
+        ctk.CTkLabel(logo_frame, text="Marouf", font=("Segoe UI", 20, "bold"),
+                      text_color="white").pack(pady=(4, 0))
+        ctk.CTkLabel(logo_frame, text="PlayStation Cafe", font=("Segoe UI", 11),
+                      text_color="#9aa0a6").pack()
+
+        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(fill="x", padx=10, pady=5)
+
+        # Nav buttons
+        nav_items = [
+            ("dashboard", "📊  لوحة التحكم"),
+            ("stations", "🎮  المحطات"),
+            ("sessions", "▶️  الجلسات"),
+            ("customers", "👥  العملاء"),
+            ("billing", "🧾  الفواتير"),
+            ("inventory", "📦  المخزون"),
+            ("employees", "👔  الموظفين"),
+            ("reports", "📈  التقارير"),
+            ("tournaments", "🏆  البطولات"),
+            ("reservations", "📅  الحجوزات"),
+            ("settings", "⚙️  الإعدادات"),
+        ]
+
+        self.nav_buttons = {}
+        for key, label in nav_items:
+            btn = ctk.CTkButton(
+                self.sidebar, text=label, font=("Segoe UI", 13),
+                fg_color="transparent", text_color="#e8eaed",
+                anchor="w", height=42, corner_radius=10,
+                hover_color="#3c4043",
+                command=lambda k=key: self.show_page(k),
             )
-            buttons.append(btn)
+            btn.pack(fill="x", padx=10, pady=2)
+            self.nav_buttons[key] = btn
 
-        return ft.Container(
-            content=ft.Column([
-                ft.Container(
-                    content=ft.Column([
-                        ft.Container(
-                            content=ft.Icon(NAV_ITEMS[1][1], size=36, color=COLORS.WHITE),
-                            width=50, height=50,
-                            bgcolor=AppColors.PRIMARY,
-                            border_radius=14,
-                            alignment=ft.alignment.center,
-                        ),
-                        ft.Text("Marouf", size=20, weight=ft.FontWeight.BOLD, color=COLORS.WHITE),
-                        ft.Text("PlayStation Cafe", size=11, color="#9aa0a6"),
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=4),
-                    padding=20,
-                ),
-                ft.Divider(color="#3c4043"),
-                ft.Container(height=8),
-                ft.Column(controls=buttons, spacing=2, scroll=ft.ScrollMode.AUTO, expand=True),
-                ft.Divider(color="#3c4043"),
-                ft.Container(content=ft.Text("v1.0", size=11, color="#9aa0a6"), padding=10),
-            ], spacing=0),
-            width=220,
-            bgcolor=AppColors.SIDEBAR_BG,
-        )
+        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(fill="x", padx=10, pady=5, side="bottom")
+        ctk.CTkLabel(self.sidebar, text="v1.0", font=("Segoe UI", 10),
+                      text_color="#9aa0a6").pack(side="bottom", pady=8)
 
-    def navigate(index):
-        state["current_idx"] = index
-        page.clean()
-        render(index)
+        self.sidebar.pack(side="left", fill="y")
 
-    def render(index):
-        page.clean()
-
-        # Sidebar
-        sidebar = build_sidebar()
-
-        # Page content
-        _, _, page_cls = NAV_ITEMS[index]
-        page_instance = page_cls(page)
-        page_instance.build()
-        state["current_page"] = page_instance
+    def _build_content(self):
+        self.content = ctk.CTkFrame(self, corner_radius=0, fg_color=BG)
+        self.content.pack(side="right", fill="both", expand=True, padx=0, pady=0)
 
         # Top bar
-        top_bar = ft.Container(
-            content=ft.Row([
-                ft.Text("Marouf PlayStation Cafe Manager", size=14, color=AppColors.TEXT_SECONDARY),
-                ft.Container(expand=True),
-                ft.IconButton(
-                    icon=getattr(ICONS, "REFRESH", "refresh"),
-                    icon_color=AppColors.TEXT_SECONDARY,
-                    tooltip="تحديث",
-                    on_click=lambda e: do_refresh(),
-                ),
-            ]),
-            padding=ft.padding.symmetric(horizontal=20, vertical=10),
-            bgcolor=AppColors.CARD_BG,
-            border=ft.border.only(bottom=ft.BorderSide(1, AppColors.BORDER)),
-        )
+        self.topbar = ctk.CTkFrame(self.content, height=50, corner_radius=0, fg_color=CARD_BG)
+        self.topbar.pack(fill="x")
+        self.topbar.pack_propagate(False)
 
-        # Content area
-        content_area = ft.Container(
-            content=page_instance,
-            expand=True,
-            bgcolor=AppColors.BG,
-            padding=0,
-        )
+        ctk.CTkLabel(self.topbar, text="Marouf PlayStation Cafe Manager",
+                      font=("Segoe UI", 13), text_color=TEXT_SEC).pack(side="right", padx=20, pady=10)
 
-        main_col = ft.Column([top_bar, content_area], spacing=0, expand=True)
+        self.page_title_label = ctk.CTkLabel(self.topbar, text="", font=("Segoe UI", 13),
+                                               text_color=TEXT_SEC)
+        self.page_title_label.pack(side="left", padx=20, pady=10)
 
-        page.add(ft.Row([sidebar, main_col], spacing=0, expand=True))
-        page.update()
+        # Content frame
+        self.pages_frame = ctk.CTkFrame(self.content, corner_radius=0, fg_color=BG)
+        self.pages_frame.pack(fill="both", expand=True)
 
-        # Load data after render
-        def load():
-            try:
-                page_instance.refresh()
-                page.update()
-            except Exception:
-                pass
-        page.run_task(delayed_load, load)
+    def _load_all_pages(self):
+        from ui.dashboard import DashboardPage
+        from ui.stations_page import StationsPage
+        from ui.sessions_page import SessionsPage
+        from ui.customers_page import CustomersPage
+        from ui.billing_page import BillingPage
+        from ui.inventory_page import InventoryPage
+        from ui.employees_page import EmployeesPage
+        from ui.reports_page import ReportsPage
+        from ui.tournaments_page import TournamentsPage
+        from ui.reservations_page import ReservationsPage
+        from ui.settings_page import SettingsPage
 
-    def do_refresh():
-        p = state.get("current_page")
-        if p and hasattr(p, 'refresh'):
-            try:
-                p.refresh()
-                page.update()
-            except Exception:
-                pass
+        self.pages = {
+            "dashboard": DashboardPage(self.pages_frame, self),
+            "stations": StationsPage(self.pages_frame, self),
+            "sessions": SessionsPage(self.pages_frame, self),
+            "customers": CustomersPage(self.pages_frame, self),
+            "billing": BillingPage(self.pages_frame, self),
+            "inventory": InventoryPage(self.pages_frame, self),
+            "employees": EmployeesPage(self.pages_frame, self),
+            "reports": ReportsPage(self.pages_frame, self),
+            "tournaments": TournamentsPage(self.pages_frame, self),
+            "reservations": ReservationsPage(self.pages_frame, self),
+            "settings": SettingsPage(self.pages_frame, self),
+        }
 
-    async def delayed_load(fn):
-        await asyncio.sleep(0.5)
-        fn()
+    def show_page(self, key):
+        if self.current_frame:
+            self.current_frame.pack_forget()
+        if key in self.pages:
+            self.current_frame = self.pages[key]
+            self.current_frame.pack(fill="both", expand=True, padx=15, pady=15)
+            self.pages[key].refresh()
 
-    async def auto_tick():
-        while True:
-            await asyncio.sleep(30)
-            if state["current_idx"] == 0:
-                try:
-                    do_refresh()
-                except Exception:
-                    pass
+        for k, btn in self.nav_buttons.items():
+            if k == key:
+                btn.configure(fg_color=PRIMARY)
+            else:
+                btn.configure(fg_color="transparent")
 
-    render(0)
-    page.run_task(auto_tick)
+
+class BasePage(ctk.CTkScrollableFrame):
+    def __init__(self, master, app, title=""):
+        super().__init__(master, fg_color=BG)
+        self.app = app
+        self.title_text = title
 
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    init_db()
+    app = App()
+    app.mainloop()
