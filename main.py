@@ -48,7 +48,6 @@ class CafeManager:
         self.content_container = ft.Container(expand=True)
         self._build_sidebar()
         self._build_layout()
-        self.navigate_to(0)
 
     def _build_sidebar(self):
         nav_btns = []
@@ -202,6 +201,7 @@ def main(page: ft.Page):
     app = CafeManager(page)
     page.add(app.layout)
     page.update()
+    app.navigate_to(0)
     page.run_task(app.auto_refresh)
 
 
