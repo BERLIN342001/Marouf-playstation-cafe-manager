@@ -14,10 +14,8 @@ from ui.tournaments.tournaments_page import TournamentsPage
 from ui.reservations.reservations_page import ReservationsPage
 from ui.settings.settings_page import SettingsPage
 
-
-ICONS = ft.Icons if hasattr(ft, "Icons") else ft.icons
-COLORS = ft.Colors if hasattr(ft, "Colors") else ft.colors
-CONTROL_STATE = ft.ControlState if hasattr(ft, "ControlState") else ft.MaterialState
+ICONS = getattr(ft, "Icons", ft.icons)
+COLORS = getattr(ft, "Colors", ft.colors)
 
 
 class NavigationItem:
@@ -27,60 +25,113 @@ class NavigationItem:
         self.page_class = page_class
 
 
-class MainApp(ft.Column):
+NAV_ITEMS = [
+    NavigationItem(ICONS.DASHBOARD, "لوحة التحكم", DashboardPage),
+    NavigationItem(ICONS.SPORTS_ESPORTS, "المحطات", StationsPage),
+    NavigationItem(ICONS.PLAY_CIRCLE, "الجلسات", SessionsPage),
+    NavigationItem(ICONS.PEOPLE, "العملاء", CustomersPage),
+    NavigationItem(ICONS.RECEIPT_LONG, "الفواتير", BillingPage),
+    NavigationItem(ICONS.INVENTORY_2, "المخزون", InventoryPage),
+    NavigationItem(ICONS.BADGE, "الموظفين", EmployeesPage),
+    NavigationItem(ICONS.BAR_CHART, "التقارير", ReportsPage),
+    NavigationItem(ICONS.EMOJI_EVENTS, "البطولات", TournamentsPage),
+    NavigationItem(ICONS.EVENT, "الحجوزات", ReservationsPage),
+    NavigationItem(ICONS.SETTINGS, "الإعدادات", SettingsPage),
+]
+
+
+class CafeManager:
     def __init__(self, page: ft.Page):
-        super().__init__()
         self.page = page
-        self.expand = True
-        self.spacing = 0
         self.current_page = None
-        self._initialized = False
-        self.nav_items = [
-            NavigationItem(ICONS.DASHBOARD, "لوحة التحكم", DashboardPage),
-            NavigationItem(ICONS.SPORTS_ESPORTS, "المحطات", StationsPage),
-            NavigationItem(ICONS.PLAY_CIRCLE, "الجلسات", SessionsPage),
-            NavigationItem(ICONS.PEOPLE, "العملاء", CustomersPage),
-            NavigationItem(ICONS.RECEIPT_LONG, "الفواتير", BillingPage),
-            NavigationItem(ICONS.INVENTORY_2, "المخزون", InventoryPage),
-            NavigationItem(ICONS.BADGE, "الموظفين", EmployeesPage),
-            NavigationItem(ICONS.BAR_CHART, "التقارير", ReportsPage),
-            NavigationItem(ICONS.EMOJI_EVENTS, "البطولات", TournamentsPage),
-            NavigationItem(ICONS.EVENT, "الحجوزات", ReservationsPage),
-            NavigationItem(ICONS.SETTINGS, "الإعدادات", SettingsPage),
-        ]
         self.nav_buttons = []
-        self.content_area = ft.Container(expand=True, content=ft.Container())
-        self.build_navigation()
+        self.content_container = ft.Container(expand=True)
+        self._build_sidebar()
+        self._build_layout()
+        self.navigate_to(0)
 
-    def init_first_page(self):
-        if not self._initialized:
-            self._initialized = True
-            self.navigate_to(0)
-
-    def build_navigation(self):
-        nav_buttons = []
-        for i, item in enumerate(self.nav_items):
+    def _build_sidebar(self):
+        nav_btns = []
+        for i, item in enumerate(NAV_ITEMS):
             btn = ft.ElevatedButton(
-                content=ft.Row(
-                    controls=[
-                        ft.Icon(item.icon, size=20, color=COLORS.WHITE),
-                        ft.Text(item.label, size=13, color=COLORS.WHITE,
-                                weight=ft.FontWeight.W_500),
-                    ],
-                    spacing=12,
-                ),
+                content=ft.Row([
+                    ft.Icon(item.icon, size=20, color=COLORS.WHITE),
+                    ft.Text(item.label, size=13, color=COLORS.WHITE, weight=ft.FontWeight.W_500),
+                ], spacing=12),
                 on_click=lambda e, idx=i: self.navigate_to(idx),
                 style=ft.ButtonStyle(
-                    bgcolor={
-                        CONTROL_STATE.DEFAULT: COLORS.TRANSPARENT,
-                        CONTROL_STATE.HOVERED: "#3c4043",
-                    },
+                    bgcolor=COLORS.TRANSPARENT,
                     padding=ft.padding.symmetric(horizontal=16, vertical=12),
                     shape=ft.RoundedRectangleBorder(radius=10),
                 ),
             )
-            nav_buttons.append(btn)
-        self.nav_buttons = nav_buttons
+            nav_btns.append(btn)
+        self.nav_buttons = nav_btns
+
+        self.sidebar = ft.Container(
+            content=ft.Column([
+                ft.Container(
+                    content=ft.Column([
+                        ft.Container(
+                            content=ft.Icon(ICONS.SPORTS_ESPORTS, size=36, color=COLORS.WHITE),
+                            width=50, height=50,
+                            bgcolor=AppColors.PRIMARY,
+                            border_radius=14,
+                            alignment=ft.alignment.center,
+                        ),
+                        ft.Text("Marouf", size=20, weight=ft.FontWeight.BOLD, color=COLORS.WHITE),
+                        ft.Text("PlayStation Cafe", size=11, color="#9aa0a6"),
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=4),
+                    padding=ft.padding.only(top=20, bottom=20, left=16, right=16),
+                ),
+                ft.Divider(color="#3c4043"),
+                ft.Container(height=8),
+                ft.Column(controls=self.nav_buttons, spacing=2, scroll=ft.ScrollMode.AUTO, expand=True),
+                ft.Divider(color="#3c4043"),
+                ft.Container(
+                    content=ft.Text("v1.0", size=11, color="#9aa0a6", text_align=ft.TextAlign.CENTER),
+                    padding=10,
+                ),
+            ], spacing=0),
+            width=220,
+            bgcolor=AppColors.SIDEBAR_BG,
+        )
+
+    def _build_layout(self):
+        self.top_bar = ft.Container(
+            content=ft.Row([
+                ft.Text("Marouf PlayStation Cafe Manager", size=14, color=AppColors.TEXT_SECONDARY),
+                ft.Container(expand=True),
+                ft.IconButton(
+                    icon=ICONS.REFRESH, icon_color=AppColors.TEXT_SECONDARY,
+                    tooltip="تحديث", on_click=self._on_refresh,
+                ),
+            ]),
+            padding=ft.padding.symmetric(horizontal=20, vertical=10),
+            bgcolor=AppColors.CARD_BG,
+            border=ft.border.only(bottom=ft.BorderSide(1, AppColors.BORDER)),
+        )
+
+        self.main_column = ft.Column([
+            self.top_bar,
+            self.content_container,
+        ], spacing=0, expand=True)
+
+        self.main_container = ft.Container(
+            content=self.main_column,
+            expand=True,
+            bgcolor=AppColors.BG,
+        )
+
+        self.layout = ft.Row([self.sidebar, self.main_container], spacing=0, expand=True)
+
+    def _on_refresh(self, e=None):
+        if self.current_page and hasattr(self.current_page, 'refresh'):
+            try:
+                self.current_page.refresh()
+            except Exception:
+                pass
+            self.page.update()
 
     def navigate_to(self, index):
         # Update nav button styles
@@ -99,39 +150,45 @@ class MainApp(ft.Column):
                 )
 
         # Build the page
-        nav_item = self.nav_items[index]
-        page_instance = nav_item.page_class(self.page)
+        item = NAV_ITEMS[index]
+        page_instance = item.page_class(self.page)
         page_instance.build()
         self.current_page = page_instance
 
-        # Update content
-        self.content_area.content = ft.Container(
-            content=page_instance,
-            expand=True,
-        )
-        self.update()
+        # Swap content
+        self.content_container.content = page_instance
+        self.page.update()
 
-        # Refresh data AFTER the control is in the tree
+        # Refresh data after render
         def do_refresh():
             if hasattr(page_instance, 'refresh'):
                 try:
                     page_instance.refresh()
+                    self.page.update()
                 except Exception:
                     pass
 
-        self.page.run_task(async_refresh, do_refresh)
+        self.page.run_task(self._delayed_refresh, do_refresh)
 
+    @staticmethod
+    async def _delayed_refresh(fn):
+        await asyncio.sleep(0.5)
+        fn()
 
-async def async_refresh(refresh_fn):
-    await asyncio.sleep(0.3)
-    refresh_fn()
+    async def auto_refresh(self):
+        while True:
+            await asyncio.sleep(30)
+            if self.current_page and isinstance(self.current_page, DashboardPage):
+                try:
+                    self.current_page.refresh()
+                    self.page.update()
+                except Exception:
+                    pass
 
 
 def main(page: ft.Page):
-    # Initialize database
     init_db()
 
-    # Page settings
     page.title = "Marouf - PlayStation Cafe Manager"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.rtl = True
@@ -140,121 +197,12 @@ def main(page: ft.Page):
     page.window.min_width = 1024
     page.window.min_height = 600
     page.bgcolor = AppColors.BG
+    page.theme = ft.Theme(color_scheme_seed=AppColors.PRIMARY, font_family="Segoe UI")
 
-    # Custom theme
-    page.theme = ft.Theme(
-        color_scheme_seed=AppColors.PRIMARY,
-        font_family="Segoe UI",
-    )
-
-    # Build layout
-    app = MainApp(page)
-
-    # Sidebar
-    sidebar = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Container(
-                    content=ft.Column(
-                        controls=[
-                            ft.Container(
-                                content=ft.Icon(ICONS.SPORTS_ESPORTS, size=36,
-                                                color=COLORS.WHITE),
-                                width=50, height=50,
-                                bgcolor=AppColors.PRIMARY,
-                                border_radius=14,
-                                alignment=ft.alignment.center,
-                            ),
-                            ft.Text("Marouf", size=20, weight=ft.FontWeight.BOLD,
-                                    color=COLORS.WHITE),
-                            ft.Text("PlayStation Cafe", size=11,
-                                    color="#9aa0a6"),
-                        ],
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=4,
-                    ),
-                    padding=ft.padding.only(top=20, bottom=20, left=16, right=16),
-                ),
-                ft.Divider(color="#3c4043"),
-                ft.Container(height=8),
-                ft.Column(
-                    controls=app.nav_buttons,
-                    spacing=2,
-                    scroll=ft.ScrollMode.AUTO,
-                    expand=True,
-                ),
-                ft.Divider(color="#3c4043"),
-                ft.Container(
-                    content=ft.Text("v1.0", size=11, color="#9aa0a6",
-                                    text_align=ft.TextAlign.CENTER),
-                    padding=10,
-                ),
-            ],
-            spacing=0,
-        ),
-        width=220,
-        bgcolor=AppColors.SIDEBAR_BG,
-    )
-
-    # Main content
-    def refresh_current():
-        if app.current_page and hasattr(app.current_page, 'refresh'):
-            try:
-                app.current_page.refresh()
-            except Exception:
-                pass
-
-    main_content = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Container(
-                    content=ft.Row(
-                        controls=[
-                            ft.Text("Marouf PlayStation Cafe Manager",
-                                    size=14, color=AppColors.TEXT_SECONDARY),
-                            ft.Container(expand=True),
-                            ft.IconButton(icon=ICONS.REFRESH, icon_color=AppColors.TEXT_SECONDARY,
-                                          tooltip="تحديث",
-                                          on_click=lambda e: refresh_current()),
-                        ],
-                    ),
-                    padding=ft.padding.symmetric(horizontal=20, vertical=10),
-                    bgcolor=AppColors.CARD_BG,
-                    border=ft.border.only(bottom=ft.BorderSide(1, AppColors.BORDER)),
-                ),
-                app.content_area,
-            ],
-            spacing=0,
-            expand=True,
-        ),
-        expand=True,
-        bgcolor=AppColors.BG,
-    )
-
-    # Layout
-    layout = ft.Row(
-        controls=[sidebar, main_content],
-        spacing=0,
-        expand=True,
-    )
-
-    page.add(layout)
+    app = CafeManager(page)
+    page.add(app.layout)
     page.update()
-
-    # Initialize first page AFTER layout is in the tree
-    app.init_first_page()
-
-    # Timer for auto-refresh
-    async def run_timer():
-        while True:
-            await asyncio.sleep(30)
-            if app.current_page and isinstance(app.current_page, DashboardPage):
-                try:
-                    app.current_page.refresh()
-                except Exception:
-                    pass
-
-    page.run_task(run_timer)
+    page.run_task(app.auto_refresh)
 
 
 if __name__ == "__main__":
