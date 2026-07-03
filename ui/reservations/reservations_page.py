@@ -27,7 +27,7 @@ class ReservationsPage(PageTemplate):
                 ft.Row([
                     ft.Container(expand=True),
                     self.filter_dd,
-                    ft.ElevatedButton("حجز جديد", icon=ft.icons.EVENT_AVAILABLE,
+                    ft.ElevatedButton("حجز جديد", icon=ft.Icons.EVENT_AVAILABLE,
                         on_click=lambda e: self.show_create_dialog(),
                         style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                              shape=ft.RoundedRectangleBorder(radius=10))),
@@ -54,7 +54,7 @@ class ReservationsPage(PageTemplate):
                     content=ft.Container(
                         content=ft.Row([
                             ft.Container(
-                                content=ft.Icon(ft.icons.EVENT, size=22, color=ft.colors.WHITE),
+                                content=ft.Icon(ft.Icons.EVENT, size=22, color=ft.Colors.WHITE),
                                 width=48, height=48, bgcolor=AppColors.INFO,
                                 border_radius=12, alignment=ft.alignment.center,
                             ),
@@ -69,13 +69,13 @@ class ReservationsPage(PageTemplate):
                                 make_status_chip(r.status),
                                 ft.Container(height=4),
                                 ft.Row([
-                                    ft.IconButton(icon=ft.icons.CHECK, size=18, icon_color=AppColors.SUCCESS,
+                                    ft.IconButton(icon=ft.Icons.CHECK, size=18, icon_color=AppColors.SUCCESS,
                                         tooltip="تأكيد",
                                         on_click=lambda e, rid=r.id: self.change_status(rid, "confirmed")),
-                                    ft.IconButton(icon=ft.icons.CANCEL, size=18, icon_color=AppColors.DANGER,
+                                    ft.IconButton(icon=ft.Icons.CANCEL, size=18, icon_color=AppColors.DANGER,
                                         tooltip="إلغاء",
                                         on_click=lambda e, rid=r.id: self.change_status(rid, "cancelled")),
-                                    ft.IconButton(icon=ft.icons.DONE_ALL, size=18, icon_color=AppColors.PRIMARY,
+                                    ft.IconButton(icon=ft.Icons.DONE_ALL, size=18, icon_color=AppColors.PRIMARY,
                                         tooltip="مكتملة",
                                         on_click=lambda e, rid=r.id: self.change_status(rid, "completed")),
                                 ], spacing=2),

@@ -18,10 +18,10 @@ class ReportsPage(PageTemplate):
             selected_index=0,
             on_change=self.on_tab_change,
             tabs=[
-                ft.Tab(text="الإيرادات", icon=ft.icons.TRENDING_UP),
-                ft.Tab(text="استخدام المحطات", icon=ft.icons.SPORTS_ESPORTS),
-                ft.Tab(text="طرق الدفع", icon=ft.icons.PAYMENT),
-                ft.Tab(text="أفضل العملاء", icon=ft.icons.PEOPLE),
+                ft.Tab(text="الإيرادات", icon=ft.Icons.TRENDING_UP),
+                ft.Tab(text="استخدام المحطات", icon=ft.Icons.SPORTS_ESPORTS),
+                ft.Tab(text="طرق الدفع", icon=ft.Icons.PAYMENT),
+                ft.Tab(text="أفضل العملاء", icon=ft.Icons.PEOPLE),
             ],
         )
         self.report_content = ft.Container(expand=True, content=ft.Column(spacing=8))
@@ -138,7 +138,7 @@ class ReportsPage(PageTemplate):
             cards.append(ft.Card(elevation=1, margin=ft.margin.only(bottom=8),
                 content=ft.Container(
                     content=ft.Row([
-                        ft.Icon(ft.icons.PAYMENT, size=24, color=AppColors.PRIMARY),
+                        ft.Icon(ft.Icons.PAYMENT, size=24, color=AppColors.PRIMARY),
                         ft.Column([
                             ft.Text(get_payment_label(d["method"]), size=15,
                                     weight=ft.FontWeight.W_600, color=AppColors.TEXT),

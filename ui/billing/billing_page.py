@@ -64,7 +64,7 @@ class BillingPage(PageTemplate):
                         ft.Card(elevation=1, margin=ft.margin.only(bottom=4),
                             content=ft.Container(
                                 content=ft.Row([
-                                    ft.Icon(ft.icons.RECEIPT, size=20, color=AppColors.PRIMARY),
+                                    ft.Icon(ft.Icons.RECEIPT, size=20, color=AppColors.PRIMARY),
                                     ft.Column([
                                         ft.Text(f"{cust_name} - {st_name}", size=13,
                                                 weight=ft.FontWeight.W_500, color=AppColors.TEXT),

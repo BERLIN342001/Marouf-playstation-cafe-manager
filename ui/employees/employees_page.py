@@ -24,8 +24,8 @@ class EmployeesPage(PageTemplate):
             selected_index=0,
             on_change=self.on_tab_change,
             tabs=[
-                ft.Tab(text="الموظفين", icon=ft.icons.PEOPLE),
-                ft.Tab(text="الحضور", icon=ft.icons.ACCESS_TIME),
+                ft.Tab(text="الموظفين", icon=ft.Icons.PEOPLE),
+                ft.Tab(text="الحضور", icon=ft.Icons.ACCESS_TIME),
             ],
         )
         return ft.Column(
@@ -65,7 +65,7 @@ class EmployeesPage(PageTemplate):
                 content=ft.Container(
                     content=ft.Row([
                         ft.Container(
-                            content=ft.Icon(ft.icons.BADGE, size=24, color=ft.colors.WHITE),
+                            content=ft.Icon(ft.Icons.BADGE, size=24, color=ft.Colors.WHITE),
                             width=48, height=48, bgcolor=AppColors.INFO,
                             border_radius=12, alignment=ft.alignment.center,
                         ),
@@ -79,9 +79,9 @@ class EmployeesPage(PageTemplate):
                             ft.Text(format_currency(emp.salary), size=12, color=AppColors.SUCCESS),
                         ], spacing=1, horizontal_alignment=ft.CrossAxisAlignment.END),
                         ft.Column([
-                            ft.IconButton(icon=ft.icons.EDIT, size=18,
+                            ft.IconButton(icon=ft.Icons.EDIT, size=18,
                                           on_click=lambda e, eid=emp.id: self.show_form_dialog(eid)),
-                            ft.IconButton(icon=ft.icons.DELETE, size=18, icon_color=AppColors.DANGER,
+                            ft.IconButton(icon=ft.Icons.DELETE, size=18, icon_color=AppColors.DANGER,
                                           on_click=lambda e, eid=emp.id: self.confirm_delete(eid)),
                         ], spacing=0),
                     ], spacing=12),

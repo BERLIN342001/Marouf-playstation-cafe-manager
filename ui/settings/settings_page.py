@@ -22,11 +22,11 @@ class SettingsPage(PageTemplate):
             selected_index=0,
             on_change=self.on_tab_change,
             tabs=[
-                ft.Tab(text="عام", icon=ft.icons.SETTINGS),
-                ft.Tab(text="الأسعار", icon=ft.icons.ATTACH_MONEY),
-                ft.Tab(text="الباقات", icon=ft.icons.LABEL),
-                ft.Tab(text="الألعاب", icon=ft.icons.SPORTS_ESPORTS),
-                ft.Tab(text="النظام", icon=ft.icons.BUILD),
+                ft.Tab(text="عام", icon=ft.Icons.SETTINGS),
+                ft.Tab(text="الأسعار", icon=ft.Icons.ATTACH_MONEY),
+                ft.Tab(text="الباقات", icon=ft.Icons.LABEL),
+                ft.Tab(text="الألعاب", icon=ft.Icons.SPORTS_ESPORTS),
+                ft.Tab(text="النظام", icon=ft.Icons.BUILD),
             ],
         )
         self.content_area = ft.Container(expand=True, content=ft.Column(spacing=10))
@@ -74,7 +74,7 @@ class SettingsPage(PageTemplate):
                 ft.Text("الإعدادات العامة", size=16, weight=ft.FontWeight.BOLD),
                 ft.Container(height=10),
                 name_f, phone_f, points_f,
-                ft.ElevatedButton("حفظ", icon=ft.icons.SAVE, on_click=save,
+                ft.ElevatedButton("حفظ", icon=ft.Icons.SAVE, on_click=save,
                     style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                          shape=ft.RoundedRectangleBorder(radius=10))),
             ], spacing=12)
@@ -111,7 +111,7 @@ class SettingsPage(PageTemplate):
                 ft.Text("إعدادات الأسعار", size=16, weight=ft.FontWeight.BOLD),
                 ft.Container(height=10),
                 rate_f, weekend_f, holiday_f,
-                ft.ElevatedButton("حفظ وتحديث المحطات", icon=ft.icons.SAVE, on_click=save,
+                ft.ElevatedButton("حفظ وتحديث المحطات", icon=ft.Icons.SAVE, on_click=save,
                     style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                          shape=ft.RoundedRectangleBorder(radius=10))),
             ], spacing=12)
@@ -128,13 +128,13 @@ class SettingsPage(PageTemplate):
                 items.append(ft.Card(elevation=1, margin=ft.margin.only(bottom=6),
                     content=ft.Container(
                         content=ft.Row([
-                            ft.Icon(ft.icons.LABEL, size=22, color=AppColors.PRIMARY),
+                            ft.Icon(ft.Icons.LABEL, size=22, color=AppColors.PRIMARY),
                             ft.Column([
                                 ft.Text(p.name, size=14, weight=ft.FontWeight.W_600, color=AppColors.TEXT),
                                 ft.Text(f"{p.hours} ساعة | {format_currency(p.price)} | ساعة بـ {format_currency(hourly_equiv)}",
                                         size=12, color=AppColors.TEXT_SECONDARY),
                             ], spacing=1, expand=True),
-                            ft.IconButton(icon=ft.icons.DELETE, size=18, icon_color=AppColors.DANGER,
+                            ft.IconButton(icon=ft.Icons.DELETE, size=18, icon_color=AppColors.DANGER,
                                           on_click=lambda e, pid=p.id: self._delete_package(pid)),
                         ], spacing=12),
                         padding=12)))
@@ -164,7 +164,7 @@ class SettingsPage(PageTemplate):
                 ft.Text("إضافة باقة جديدة", size=14, weight=ft.FontWeight.W_600),
                 ft.Container(height=6),
                 ft.Row([name_f, hours_f, price_f], spacing=12),
-                ft.ElevatedButton("إضافة", icon=ft.icons.ADD, on_click=add_pkg,
+                ft.ElevatedButton("إضافة", icon=ft.Icons.ADD, on_click=add_pkg,
                     style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                          shape=ft.RoundedRectangleBorder(radius=10))),
             ], spacing=8)
@@ -189,12 +189,12 @@ class SettingsPage(PageTemplate):
                 items.append(ft.Card(elevation=1, margin=ft.margin.only(bottom=4),
                     content=ft.Container(
                         content=ft.Row([
-                            ft.Icon(ft.icons.SPORTS_ESPORTS, size=20, color=AppColors.PRIMARY),
+                            ft.Icon(ft.Icons.SPORTS_ESPORTS, size=20, color=AppColors.PRIMARY),
                             ft.Text(g.name, size=13, weight=ft.FontWeight.W_500,
                                     color=AppColors.TEXT, expand=True),
                             ft.Text(g.platform, size=12, color=AppColors.TEXT_SECONDARY),
                             ft.Text(f"{g.available_copies}/{g.total_copies}", size=12, color=AppColors.TEXT),
-                            ft.IconButton(icon=ft.icons.DELETE, size=16, icon_color=AppColors.DANGER,
+                            ft.IconButton(icon=ft.Icons.DELETE, size=16, icon_color=AppColors.DANGER,
                                           on_click=lambda e, gid=g.id: self._delete_game(gid)),
                         ], spacing=10),
                         padding=10)))
@@ -223,7 +223,7 @@ class SettingsPage(PageTemplate):
                 ft.Text("إضافة لعبة جديدة", size=14, weight=ft.FontWeight.W_600),
                 ft.Container(height=6),
                 ft.Row([name_f, plat_f, copies_f], spacing=12),
-                ft.ElevatedButton("إضافة", icon=ft.icons.ADD, on_click=add_game,
+                ft.ElevatedButton("إضافة", icon=ft.Icons.ADD, on_click=add_game,
                     style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                          shape=ft.RoundedRectangleBorder(radius=10))),
             ], spacing=8)
@@ -268,7 +268,7 @@ class SettingsPage(PageTemplate):
                 ], spacing=4),
                 padding=15)),
             ft.Container(height=10),
-            ft.ElevatedButton("إعادة تعيين قاعدة البيانات", icon=ft.icons.DELETE_FOREVER,
+            ft.ElevatedButton("إعادة تعيين قاعدة البيانات", icon=ft.Icons.DELETE_FOREVER,
                 on_click=reset_db,
                 style=ft.ButtonStyle(bgcolor=AppColors.DANGER,
                                      shape=ft.RoundedRectangleBorder(radius=10))),

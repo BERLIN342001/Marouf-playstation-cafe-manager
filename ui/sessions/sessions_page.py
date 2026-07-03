@@ -24,8 +24,8 @@ class SessionsPage(PageTemplate):
             selected_index=0,
             on_change=self.on_tab_change,
             tabs=[
-                ft.Tab(text="الجلسات النشطة", icon=ft.icons.PLAY_CIRCLE),
-                ft.Tab(text="سجل الجلسات", icon=ft.icons.HISTORY),
+                ft.Tab(text="الجلسات النشطة", icon=ft.Icons.PLAY_CIRCLE),
+                ft.Tab(text="سجل الجلسات", icon=ft.Icons.HISTORY),
             ],
             animation_duration=200,
         )
@@ -56,7 +56,7 @@ class SessionsPage(PageTemplate):
         stations = get_stations(db)
         self.end_btn_row.controls = [
             ft.ElevatedButton(
-                "بدء جلسة جديدة", icon=ft.icons.ADD,
+                "بدء جلسة جديدة", icon=ft.Icons.ADD,
                 on_click=lambda e: self.show_start_dialog(),
                 style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                      shape=ft.RoundedRectangleBorder(radius=10)),
@@ -67,7 +67,7 @@ class SessionsPage(PageTemplate):
             self.active_list.controls = [
                 ft.Container(
                     content=ft.Column([
-                        ft.Icon(ft.icons.PLAY_CIRCLE_OUTLINE, size=48, color=AppColors.TEXT_SECONDARY),
+                        ft.Icon(ft.Icons.PLAY_CIRCLE_OUTLINE, size=48, color=AppColors.TEXT_SECONDARY),
                         ft.Text("لا توجد جلسات نشطة", size=15,
                                 color=AppColors.TEXT_SECONDARY),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -96,7 +96,7 @@ class SessionsPage(PageTemplate):
                     content=ft.Container(
                         content=ft.Row([
                             ft.Container(
-                                content=ft.Text(st_name, size=11, color=ft.colors.WHITE,
+                                content=ft.Text(st_name, size=11, color=ft.Colors.WHITE,
                                                 weight=ft.FontWeight.BOLD),
                                 width=60, height=60, bgcolor=AppColors.DANGER,
                                 border_radius=12, alignment=ft.alignment.center,
@@ -110,7 +110,7 @@ class SessionsPage(PageTemplate):
                                         color=AppColors.TEXT_SECONDARY),
                             ], spacing=2, expand=True),
                             ft.Column([
-                                ft.ElevatedButton("إنهاء", icon=ft.icons.STOP,
+                                ft.ElevatedButton("إنهاء", icon=ft.Icons.STOP,
                                     on_click=lambda e, sid=s.id: self.end_session_action(sid),
                                     style=ft.ButtonStyle(bgcolor=AppColors.DANGER,
                                                          shape=ft.RoundedRectangleBorder(radius=8))),
@@ -145,7 +145,7 @@ class SessionsPage(PageTemplate):
                 ft.Card(elevation=1, margin=ft.margin.only(bottom=6),
                     content=ft.Container(
                         content=ft.Row([
-                            ft.Text(str(s.id), size=12, color=ft.colors.WHITE,
+                            ft.Text(str(s.id), size=12, color=ft.Colors.WHITE,
                                     weight=ft.FontWeight.BOLD),
                             ft.Column([
                                 ft.Text(f"{cust_name} - {st_name}", size=14,

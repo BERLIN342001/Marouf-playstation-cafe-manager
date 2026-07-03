@@ -54,17 +54,17 @@ class DashboardPage(PageTemplate):
             # Build stat cards
             cards = [
                 StatCard("إيرادات اليوم", format_currency(stats["today_revenue"]),
-                         ft.icons.ATTACH_MONEY, AppColors.SUCCESS),
+                         ft.Icons.ATTACH_MONEY, AppColors.SUCCESS),
                 StatCard("إيرادات الأسبوع", format_currency(stats["week_revenue"]),
-                         ft.icons.TRENDING_UP, AppColors.PRIMARY),
+                         ft.Icons.TRENDING_UP, AppColors.PRIMARY),
                 StatCard("محطات شغالة", f"{stats['active_sessions']} / {stats['station_stats']['total']}",
-                         ft.icons.SPORTS_ESPORTS, AppColors.DANGER),
+                         ft.Icons.SPORTS_ESPORTS, AppColors.DANGER),
                 StatCard("جلسات اليوم", str(stats["today_sessions"]),
-                         ft.icons.TIMELINE, AppColors.INFO),
+                         ft.Icons.TIMELINE, AppColors.INFO),
                 StatCard("ساعات اللعب اليوم", f"{stats['today_hours']} ساعة",
-                         ft.icons.SCHEDULE, AppColors.WARNING),
+                         ft.Icons.SCHEDULE, AppColors.WARNING),
                 StatCard("إجمالي العملاء", str(stats["total_customers"]),
-                         ft.icons.PEOPLE, "#8b5cf6"),
+                         ft.Icons.PEOPLE, "#8b5cf6"),
             ]
 
             # Arrange cards in 3 columns
@@ -84,7 +84,7 @@ class DashboardPage(PageTemplate):
                     ft.Container(
                         content=ft.Column(
                             controls=[
-                                ft.Icon(ft.icons.CHECK_CIRCLE_OUTLINE, size=48, color=AppColors.SUCCESS),
+                                ft.Icon(ft.Icons.CHECK_CIRCLE_OUTLINE, size=48, color=AppColors.SUCCESS),
                                 ft.Text("لا توجد جلسات نشطة حالياً", size=15,
                                         color=AppColors.TEXT_SECONDARY,
                                         ),
@@ -111,7 +111,7 @@ class DashboardPage(PageTemplate):
                                     controls=[
                                         ft.Container(
                                             content=ft.Text(str(s.id), size=12,
-                                                            color=ft.colors.WHITE,
+                                                            color=ft.Colors.WHITE,
                                                             weight=ft.FontWeight.BOLD),
                                             width=40, height=40,
                                             bgcolor=AppColors.DANGER,

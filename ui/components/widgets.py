@@ -42,7 +42,7 @@ class StatCard(ft.Card):
             content=ft.Row(
                 controls=[
                     ft.Container(
-                        content=ft.Icon(icon, size=30, color=ft.colors.WHITE),
+                        content=ft.Icon(icon, size=30, color=ft.Colors.WHITE),
                         width=56, height=56,
                         bgcolor=color,
                         border_radius=12,
@@ -67,7 +67,7 @@ class StatCard(ft.Card):
 def make_search_field(on_change=None, placeholder: str = "بحث..."):
     return ft.TextField(
         hint_text=placeholder,
-        prefix_icon=ft.icons.SEARCH,
+        prefix_icon=ft.Icons.SEARCH,
         on_change=on_change,
         border_radius=10,
         filled=True,
@@ -82,7 +82,7 @@ def make_elevated_button(text: str, on_click=None, icon=None, color=None):
         on_click=on_click,
         icon=icon,
         style=ft.ButtonStyle(
-            bgcolor=ft.colors.TRANSPARENT,
+            bgcolor=ft.Colors.TRANSPARENT,
             color=color or AppColors.PRIMARY,
             shape=ft.RoundedRectangleBorder(radius=10),
             text_style=ft.TextStyle(weight=ft.FontWeight.W_600),
@@ -101,7 +101,7 @@ def make_fab(icon, on_click, tooltip=""):
 
 def show_snackbar(page, message: str, color: str = AppColors.PRIMARY):
     snack = ft.SnackBar(
-        content=ft.Text(message, color=ft.colors.WHITE),
+        content=ft.Text(message, color=ft.Colors.WHITE),
         bgcolor=color,
     )
     page.overlay.append(snack)
@@ -113,7 +113,7 @@ def make_status_chip(status: str):
     color = get_status_color(status)
     label = get_status_label(status)
     return ft.Container(
-        content=ft.Text(label, size=11, color=ft.colors.WHITE, weight=ft.FontWeight.W_600),
+        content=ft.Text(label, size=11, color=ft.Colors.WHITE, weight=ft.FontWeight.W_600),
         bgcolor=color,
         padding=ft.padding.symmetric(horizontal=12, vertical=4),
         border_radius=20,

@@ -22,7 +22,7 @@ class CustomersPage(PageTemplate):
             controls=[
                 ft.Row([
                     self.search_field,
-                    ft.ElevatedButton("إضافة عميل", icon=ft.icons.PERSON_ADD,
+                    ft.ElevatedButton("إضافة عميل", icon=ft.Icons.PERSON_ADD,
                         on_click=lambda e: self.show_form_dialog(),
                         style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                              shape=ft.RoundedRectangleBorder(radius=10))),
@@ -53,7 +53,7 @@ class CustomersPage(PageTemplate):
                         content=ft.Container(
                             content=ft.Row([
                                 ft.Container(
-                                    content=ft.Icon(ft.icons.PERSON, size=24, color=ft.colors.WHITE),
+                                    content=ft.Icon(ft.Icons.PERSON, size=24, color=ft.Colors.WHITE),
                                     width=48, height=48, bgcolor=AppColors.PRIMARY,
                                     border_radius=12, alignment=ft.alignment.center,
                                 ),
@@ -68,11 +68,11 @@ class CustomersPage(PageTemplate):
                                             color=AppColors.WARNING),
                                 ], spacing=2, horizontal_alignment=ft.CrossAxisAlignment.END),
                                 ft.Column([
-                                    ft.IconButton(icon=ft.icons.EDIT, size=20,
+                                    ft.IconButton(icon=ft.Icons.EDIT, size=20,
                                         on_click=lambda e, cid=c.id: self.show_form_dialog(cid)),
-                                    ft.IconButton(icon=ft.icons.DELETE, size=20, icon_color=AppColors.DANGER,
+                                    ft.IconButton(icon=ft.Icons.DELETE, size=20, icon_color=AppColors.DANGER,
                                         on_click=lambda e, cid=c.id: self.confirm_delete(cid)),
-                                    ft.IconButton(icon=ft.icons.ACCOUNT_BALANCE_WALLET, size=20,
+                                    ft.IconButton(icon=ft.Icons.ACCOUNT_BALANCE_WALLET, size=20,
                                         icon_color=AppColors.SUCCESS,
                                         on_click=lambda e, cid=c.id: self.show_charge_dialog(cid)),
                                 ], spacing=0),

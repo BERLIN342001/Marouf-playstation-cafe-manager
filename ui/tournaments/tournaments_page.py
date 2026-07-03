@@ -22,7 +22,7 @@ class TournamentsPage(PageTemplate):
             controls=[
                 ft.Row([
                     ft.Container(expand=True),
-                    ft.ElevatedButton("إنشاء بطولة", icon=ft.icons.EMOJI_EVENTS,
+                    ft.ElevatedButton("إنشاء بطولة", icon=ft.Icons.EMOJI_EVENTS,
                         on_click=lambda e: self.show_create_dialog(),
                         style=ft.ButtonStyle(bgcolor=AppColors.PRIMARY,
                                              shape=ft.RoundedRectangleBorder(radius=10))),
@@ -64,19 +64,19 @@ class TournamentsPage(PageTemplate):
                             ], spacing=20),
                             ft.Container(height=8),
                             ft.Row([
-                                ft.ElevatedButton("تسجيل لاعب", icon=ft.icons.PERSON_ADD,
+                                ft.ElevatedButton("تسجيل لاعب", icon=ft.Icons.PERSON_ADD,
                                     on_click=lambda e, tid=t.id: self.show_register_dialog(tid),
                                     style=ft.ButtonStyle(
                                         bgcolor=AppColors.PRIMARY if remaining > 0 else AppColors.TEXT_SECONDARY,
                                         shape=ft.RoundedRectangleBorder(radius=8))),
-                                ft.ElevatedButton("المشاركين", icon=ft.icons.LIST,
+                                ft.ElevatedButton("المشاركين", icon=ft.Icons.LIST,
                                     on_click=lambda e, tid=t.id, p=participants: self.show_participants(tid, p),
                                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8))),
-                                ft.ElevatedButton("بدء", icon=ft.icons.PLAY_ARROW,
+                                ft.ElevatedButton("بدء", icon=ft.Icons.PLAY_ARROW,
                                     on_click=lambda e, tid=t.id: self.change_status(tid, "in_progress"),
                                     style=ft.ButtonStyle(bgcolor=AppColors.SUCCESS,
                                                          shape=ft.RoundedRectangleBorder(radius=8))),
-                                ft.ElevatedButton("إنهاء", icon=ft.icons.CHECK_CIRCLE,
+                                ft.ElevatedButton("إنهاء", icon=ft.Icons.CHECK_CIRCLE,
                                     on_click=lambda e, tid=t.id: self.change_status(tid, "completed"),
                                     style=ft.ButtonStyle(bgcolor=AppColors.WARNING,
                                                          shape=ft.RoundedRectangleBorder(radius=8))),

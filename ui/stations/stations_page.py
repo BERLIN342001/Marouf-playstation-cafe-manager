@@ -121,7 +121,7 @@ class StationsPage(PageTemplate):
                                     ft.Row([
                                         ft.Text(st.name, size=16, weight=ft.FontWeight.BOLD,
                                                 color=AppColors.TEXT),
-                                        ft.Icon(ft.icons.MORE_VERT, size=20,
+                                        ft.Icon(ft.Icons.MORE_VERT, size=20,
                                                 on_click=lambda e, sid=st.id: self.show_station_menu(e, sid)),
                                     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                                     ft.Text(st.console_type, size=13, color=AppColors.TEXT_SECONDARY),
@@ -136,9 +136,9 @@ class StationsPage(PageTemplate):
                                     ft.Text(f"كنترولر: {st.controller_count}", size=12,
                                             color=AppColors.TEXT_SECONDARY),
                                     ft.Row([
-                                        ft.Icon(ft.icons.VRPA_DESKTOP if st.has_vr else ft.icons.VRPA_DESKTOP_OUTLINED,
+                                        ft.Icon(ft.Icons.VRPA_DESKTOP if st.has_vr else ft.Icons.VRPA_DESKTOP_OUTLINED,
                                                 size=16, color=AppColors.PRIMARY if st.has_vr else AppColors.TEXT_SECONDARY),
-                                        ft.Icon(ft.icons.SPORTS_SCOREBOARD if st.has_wheel else ft.icons.SPORTS_SCOREBOARD_OUTLINED,
+                                        ft.Icon(ft.Icons.SPORTS_SCOREBOARD if st.has_wheel else ft.Icons.SPORTS_SCOREBOARD_OUTLINED,
                                                 size=16, color=AppColors.PRIMARY if st.has_wheel else AppColors.TEXT_SECONDARY),
                                     ], spacing=8),
                                 ],
