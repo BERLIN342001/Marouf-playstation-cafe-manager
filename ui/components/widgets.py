@@ -77,17 +77,12 @@ def make_search_field(on_change=None, placeholder: str = "بحث..."):
     )
 
 
-def make_elevated_button(text: str, on_click=None, icon=None, color=None, style=ft.ButtonStyle.FILLED):
+def make_elevated_button(text: str, on_click=None, icon=None, color=None):
     return ft.ElevatedButton(
         text=text,
         on_click=on_click,
         icon=icon,
         style=ft.ButtonStyle(
-            bgcolor=ft.colors.TRANSPARENT,
-            color=color or AppColors.PRIMARY,
-            shape=ft.RoundedRectangleBorder(radius=10),
-            text_style=ft.TextStyle(weight=ft.FontWeight.W_600),
-        ) if style == ft.ButtonStyle.FILLED else ft.ButtonStyle(
             bgcolor=ft.colors.TRANSPARENT,
             color=color or AppColors.PRIMARY,
             shape=ft.RoundedRectangleBorder(radius=10),
