@@ -1,5 +1,6 @@
 from main import *
 from database.db import SessionLocal
+from database.models import SessionStatus
 from services.services import (
     start_session, end_session, cancel_session,
     get_sessions, get_active_sessions, get_session_by_id,
