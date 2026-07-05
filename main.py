@@ -1,14 +1,15 @@
-import customtkinter as ctk
-import tkinter as tk
-from tkinter import ttk, messagebox
-from database.db import init_db, SessionLocal
-from services.services import get_dashboard_stats
 import os
+import sys
 import logging
 import traceback
 
+# ─── Ensure project directory is in path ────────────────────
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 # ─── Debug Logging ──────────────────────────────────────────
-LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "debug.log")
+LOG_FILE = os.path.join(PROJECT_DIR, "debug.log")
 logging.basicConfig(
     filename=LOG_FILE,
     level=logging.DEBUG,
@@ -17,6 +18,35 @@ logging.basicConfig(
     encoding="utf-8",
 )
 log = logging.getLogger("app")
+
+# ─── Check Dependencies ─────────────────────────────────────
+def check_dependencies():
+    """Verify all required packages are installed."""
+    missing = []
+    try:
+        import customtkinter
+        log.info(f"customtkinter {customtkinter.__version__} OK")
+    except ImportError:
+        missing.append("customtkinter")
+        log.error("customtkinter NOT installed!")
+
+    try:
+        import sqlalchemy
+        log.info(f"sqlalchemy {sqlalchemy.__version__} OK")
+    except ImportError:
+        missing.append("SQLAlchemy")
+        log.error("SQLAlchemy NOT installed!")
+
+    return missing
+
+
+# ─── Import after dependency check ──────────────────────────
+import customtkinter as ctk
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+from database.db import init_db, SessionLocal
+from services.services import get_dashboard_stats
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -80,34 +110,24 @@ class App(ctk.CTk):
         self.current_frame = None
         self._page_classes = {}
 
-        try:
-            self._build_sidebar()
-            log.debug("Sidebar built OK")
-        except Exception as e:
-            log.error(f"Sidebar failed: {e}\n{traceback.format_exc()}")
-
-        try:
-            self._build_content()
-            log.debug("Content area built OK")
-        except Exception as e:
-            log.error(f"Content area failed: {e}\n{traceback.format_exc()}")
-
-        try:
-            self._register_page_classes()
-            log.debug("Page classes registered OK")
-        except Exception as e:
-            log.error(f"Page class registration failed: {e}\n{traceback.format_exc()}")
-
-        try:
-            self.show_page("dashboard")
-            log.debug("Dashboard shown OK")
-        except Exception as e:
-            log.error(f"Dashboard show failed: {e}\n{traceback.format_exc()}")
+        # Build UI
+        self._build_sidebar()
+        self._build_content()
+        self._register_page_classes()
+        self.show_page("dashboard")
 
     # ── Sidebar ──
     def _build_sidebar(self):
         self.sidebar = ctk.CTkFrame(self, width=220, corner_radius=0, fg_color=SIDEBAR_BG)
 
+        # Bottom items first (so they stay at bottom)
+        ctk.CTkLabel(self.sidebar, text="v1.0", font=("Segoe UI", 10),
+                      text_color="#9aa0a6").pack(side="bottom", pady=8)
+        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(
+            fill="x", padx=10, pady=5, side="bottom"
+        )
+
+        # Logo
         logo_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         logo_frame.pack(pady=20, padx=16)
 
@@ -117,8 +137,11 @@ class App(ctk.CTk):
         ctk.CTkLabel(logo_frame, text="PlayStation Cafe", font=("Segoe UI", 11),
                       text_color="#9aa0a6").pack()
 
-        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(fill="x", padx=10, pady=5)
+        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(
+            fill="x", padx=10, pady=5
+        )
 
+        # Navigation
         nav_items = [
             ("dashboard", "📊  لوحة التحكم"),
             ("stations", "🎮  المحطات"),
@@ -145,10 +168,6 @@ class App(ctk.CTk):
             btn.pack(fill="x", padx=10, pady=2)
             self.nav_buttons[key] = btn
 
-        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(fill="x", padx=10, pady=5, side="bottom")
-        ctk.CTkLabel(self.sidebar, text="v1.0", font=("Segoe UI", 10),
-                      text_color="#9aa0a6").pack(side="bottom", pady=8)
-
         self.sidebar.pack(side="left", fill="y")
 
     # ── Content Area ──
@@ -162,14 +181,19 @@ class App(ctk.CTk):
         self.topbar.pack_propagate(False)
 
         ctk.CTkLabel(self.topbar, text="Marouf PlayStation Cafe Manager",
-                      font=("Segoe UI", 13), text_color=TEXT_SEC).pack(side="right", padx=20, pady=10)
+                      font=("Segoe UI", 13), text_color=TEXT_SEC).pack(
+            side="right", padx=20, pady=10
+        )
 
-        self.page_title_label = ctk.CTkLabel(self.topbar, text="", font=("Segoe UI", 13),
-                                               text_color=TEXT_SEC)
+        self.page_title_label = ctk.CTkLabel(
+            self.topbar, text="", font=("Segoe UI", 13), text_color=TEXT_SEC
+        )
         self.page_title_label.pack(side="left", padx=20, pady=10)
 
-        # Pages container
-        self.pages_frame = ctk.CTkFrame(self.content, corner_radius=0, fg_color=BG)
+        # Scrollable pages container
+        self.pages_frame = ctk.CTkScrollableFrame(
+            self.content, corner_radius=0, fg_color=BG
+        )
         self.pages_frame.pack(fill="both", expand=True)
 
     # ── Page Registration (lazy) ──
@@ -204,14 +228,11 @@ class App(ctk.CTk):
     def show_page(self, key):
         log.info(f"show_page('{key}')")
 
-        # Hide current
+        # Hide current page
         if self.current_frame:
-            try:
-                self.current_frame.pack_forget()
-            except Exception as e:
-                log.error(f"pack_forget error: {e}")
+            self.current_frame.pack_forget()
 
-        # Lazy create
+        # Lazy create page
         if key not in self.pages:
             log.info(f"Creating page '{key}' (lazy)...")
             try:
@@ -220,35 +241,44 @@ class App(ctk.CTk):
                 log.info(f"Page '{key}' created OK")
             except Exception as e:
                 log.error(f"Page '{key}' creation FAILED: {e}\n{traceback.format_exc()}")
-                err = ctk.CTkLabel(self.pages_frame,
-                                   text=f"خطأ في تحميل الصفحة: {e}",
-                                   font=("Segoe UI", 14), text_color=DANGER)
-                err.pack(pady=40)
-                self.current_frame = err
+                # Show error in the content area
+                err_frame = ctk.CTkFrame(self.pages_frame, fg_color=CARD_BG, corner_radius=12)
+                err_frame.pack(fill="x", padx=20, pady=20)
+                ctk.CTkLabel(
+                    err_frame, text="⚠️ خطأ في تحميل الصفحة",
+                    font=("Segoe UI", 18, "bold"), text_color=DANGER, anchor="e"
+                ).pack(fill="x", padx=20, pady=(20, 5))
+                ctk.CTkLabel(
+                    err_frame, text=str(e),
+                    font=("Segoe UI", 13), text_color=TEXT_SEC, anchor="e",
+                    wraplength=600
+                ).pack(fill="x", padx=20, pady=(5, 20))
+                self.current_frame = err_frame
                 return
 
-        # Show
+        # Show page
+        self.current_frame = self.pages[key]
+        self.current_frame.pack(fill="both", expand=True, padx=15, pady=15)
+
+        # Update title
+        titles = {
+            "dashboard": "لوحة التحكم", "stations": "إدارة المحطات",
+            "sessions": "إدارة الجلسات", "customers": "إدارة العملاء",
+            "billing": "الفواتير والمدفوعات", "inventory": "إدارة المخزون",
+            "employees": "إدارة الموظفين", "reports": "التقارير المالية",
+            "tournaments": "إدارة البطولات", "reservations": "إدارة الحجوزات",
+            "settings": "الإعدادات",
+        }
+        self.page_title_label.configure(text=titles.get(key, ""))
+
+        # Refresh data
         try:
-            self.current_frame = self.pages[key]
-            self.current_frame.pack(fill="both", expand=True, padx=15, pady=15)
-            self.current_frame.update_idletasks()
-
-            titles = {
-                "dashboard": "لوحة التحكم", "stations": "إدارة المحطات",
-                "sessions": "إدارة الجلسات", "customers": "إدارة العملاء",
-                "billing": "الفواتير والمدفوعات", "inventory": "إدارة المخزون",
-                "employees": "إدارة الموظفين", "reports": "التقارير المالية",
-                "tournaments": "إدارة البطولات", "reservations": "إدارة الحجوزات",
-                "settings": "الإعدادات",
-            }
-            self.page_title_label.configure(text=titles.get(key, ""))
-
             self.pages[key].refresh()
-            log.info(f"Page '{key}' shown + refreshed OK")
+            log.info(f"Page '{key}' refresh OK")
         except Exception as e:
-            log.error(f"Page '{key}' show FAILED: {e}\n{traceback.format_exc()}")
+            log.error(f"Page '{key}' refresh FAILED: {e}\n{traceback.format_exc()}")
 
-        # Highlight nav
+        # Highlight nav button
         for k, btn in self.nav_buttons.items():
             btn.configure(fg_color=PRIMARY if k == key else "transparent")
 
@@ -257,7 +287,7 @@ class App(ctk.CTk):
 #  BasePage
 # ════════════════════════════════════════════════════════════
 class BasePage(ctk.CTkFrame):
-    """Base class for all pages. Uses a regular CTkFrame for reliability."""
+    """Base class for all pages."""
 
     def __init__(self, master, app, title=""):
         super().__init__(master, fg_color=BG)
@@ -273,12 +303,41 @@ class BasePage(ctk.CTkFrame):
 # ════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     log.info("=== Application Starting ===")
+    log.info(f"Python: {sys.version}")
+    log.info(f"Working dir: {os.getcwd()}")
+    log.info(f"Project dir: {PROJECT_DIR}")
+
+    # Check dependencies first
+    missing = check_dependencies()
+    if missing:
+        msg = f"المكتبات التالية غير مثبتة:\n\n" + "\n".join(f"  • {m}" for m in missing)
+        msg += "\n\nيرجى تشغيل install.bat أولاً لتثبيت المكتبات المطلوبة."
+        log.error(f"Missing dependencies: {missing}")
+        try:
+            root = tk.Tk()
+            root.withdraw()
+            messagebox.showerror("خطأ - مكتبات مفقودة", msg)
+            root.destroy()
+        except Exception:
+            print(msg, file=sys.stderr)
+        sys.exit(1)
+
+    # Initialize database
     try:
         init_db()
         log.info("Database initialized OK")
     except Exception as e:
         log.error(f"Database init FAILED: {e}\n{traceback.format_exc()}")
+        try:
+            root = tk.Tk()
+            root.withdraw()
+            messagebox.showerror("خطأ", f"فشل في تهيئة قاعدة البيانات:\n{e}")
+            root.destroy()
+        except Exception:
+            print(f"Database init failed: {e}", file=sys.stderr)
+        sys.exit(1)
 
+    # Start app
     try:
         app = App()
         log.info("App created, starting mainloop")
@@ -286,6 +345,6 @@ if __name__ == "__main__":
     except Exception as e:
         log.critical(f"FATAL: {e}\n{traceback.format_exc()}")
         try:
-            messagebox.showerror("خطأ", f"حدث خطأ في تشغيل البرنامج:\n{e}")
-        except:
-            pass
+            messagebox.showerror("خطأ", f"حدث خطأ في تشغيل البرنامج:\n\n{e}\n\nتفاصيل:\n{traceback.format_exc()}")
+        except Exception:
+            print(f"FATAL: {e}\n{traceback.format_exc()}", file=sys.stderr)
