@@ -74,8 +74,7 @@ class StartSessionDialog(ctk.CTkToplevel):
         self.station_var = ctk.StringVar()
         self.station_combo = ctk.CTkComboBox(
             form, values=station_names, variable=self.station_var,
-            width=280, height=38, font=("Segoe UI", 12),
-            placeholder_text="اختر محطة..."
+            width=280, height=38, font=("Segoe UI", 12)
         )
         self.station_combo.grid(row=0, column=1, sticky="w", **pad)
 
