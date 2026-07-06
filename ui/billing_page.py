@@ -70,7 +70,7 @@ class PaymentRow(ctk.CTkFrame):
         ).pack(fill="x", padx=14, pady=1)
 
         # Separator
-        ctk.CTkFrame(self, height=1, fg_color="#e5e7eb").pack(fill="x", padx=14, pady=6)
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", padx=14, pady=6)
 
         # Bottom row: payment method, amount, discount, final
         bottom = ctk.CTkFrame(self, fg_color="transparent")
@@ -138,7 +138,7 @@ class BillingPage(BasePage):
 
         ctk.CTkButton(
             inner, text="🔍 عرض", height=38, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._on_date_change
         ).pack(side="right", padx=(0, 6))
 
@@ -185,7 +185,7 @@ class BillingPage(BasePage):
                 font=("Segoe UI", 11, "bold"), text_color=TEXT_SEC, anchor="e"
             ).pack(side="right", padx=4)
 
-        ctk.CTkFrame(self, height=1, fg_color="#e0e0e0").pack(fill="x", pady=(0, 8))
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", pady=(0, 8))
 
         # ── Payments list container ──
         self.payments_container = ctk.CTkFrame(self, fg_color="transparent")

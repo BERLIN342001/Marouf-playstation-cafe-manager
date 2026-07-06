@@ -46,29 +46,86 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from database.db import init_db, SessionLocal
-from services.services import get_dashboard_stats
+from services.services import get_dashboard_stats, get_setting, set_setting
+from themes import THEMES, THEME_ORDER
 
-ctk.set_appearance_mode("light")
-ctk.set_default_color_theme("blue")
 
+# ════════════════════════════════════════════════════════════
+#  Theme Application — sets module-level color globals
+# ════════════════════════════════════════════════════════════
+def _apply_theme_colors(theme_name):
+    """Update module-level color variables from a theme dict."""
+    t = THEMES[theme_name]
+    ctk.set_appearance_mode(t["mode"])
+
+    # Module-level globals — pages read these via `from main import *`
+    global PRIMARY, PRIMARY_HOVER, BG, SIDEBAR_BG, TEXT, TEXT_SEC
+    global SUCCESS, SUCCESS_HOVER, DANGER, DANGER_HOVER, WARNING, WARNING_HOVER
+    global SECONDARY, SECONDARY_HOVER
+    global CARD_BG, DIVIDER, ROW_BG, DELETE_HOVER
+    global SIDEBAR_TEXT, SIDEBAR_HOVER, SIDEBAR_DIVIDER, SIDEBAR_SUB, INFO_BG
+
+    PRIMARY          = t["PRIMARY"]
+    PRIMARY_HOVER    = t["PRIMARY_HOVER"]
+    BG               = t["BG"]
+    SIDEBAR_BG       = t["SIDEBAR_BG"]
+    TEXT             = t["TEXT"]
+    TEXT_SEC         = t["TEXT_SEC"]
+    SUCCESS          = t["SUCCESS"]
+    SUCCESS_HOVER    = t["SUCCESS_HOVER"]
+    DANGER           = t["DANGER"]
+    DANGER_HOVER     = t["DANGER_HOVER"]
+    WARNING          = t["WARNING"]
+    WARNING_HOVER    = t["WARNING_HOVER"]
+    SECONDARY        = t["SECONDARY"]
+    SECONDARY_HOVER  = t["SECONDARY_HOVER"]
+    CARD_BG          = t["CARD_BG"]
+    DIVIDER          = t["DIVIDER"]
+    ROW_BG           = t["ROW_BG"]
+    DELETE_HOVER     = t["DELETE_HOVER"]
+    SIDEBAR_TEXT     = t["SIDEBAR_TEXT"]
+    SIDEBAR_HOVER    = t["SIDEBAR_HOVER"]
+    SIDEBAR_DIVIDER  = t["SIDEBAR_DIVIDER"]
+    SIDEBAR_SUB      = t["SIDEBAR_SUB"]
+    INFO_BG          = t["INFO_BG"]
+
+    # Rebuild STATUS_COLORS with updated colors
+    global STATUS_COLORS
+    STATUS_COLORS = {
+        "available": SUCCESS, "occupied": DANGER,
+        "maintenance": WARNING, "reserved": PRIMARY,
+        "active": SUCCESS, "completed": TEXT_SEC,
+        "cancelled": DANGER, "pending": WARNING,
+        "confirmed": PRIMARY, "registration": PRIMARY,
+        "in_progress": SUCCESS,
+    }
+
+# ─── Defaults (will be overwritten by _apply_theme_colors) ──
 PRIMARY = "#1a73e8"
+PRIMARY_HOVER = "#1557b0"
 BG = "#f0f2f5"
 SIDEBAR_BG = "#202124"
 TEXT = "#202124"
 TEXT_SEC = "#5f6368"
 SUCCESS = "#22c55e"
+SUCCESS_HOVER = "#16a34a"
 DANGER = "#ef4444"
+DANGER_HOVER = "#dc2626"
 WARNING = "#f59e0b"
+WARNING_HOVER = "#d97706"
+SECONDARY = "#9ca3af"
+SECONDARY_HOVER = "#6b7280"
 CARD_BG = "#ffffff"
+DIVIDER = "#e5e7eb"
+ROW_BG = "#f9fafb"
+DELETE_HOVER = "#fee2e2"
+SIDEBAR_TEXT = "#e8eaed"
+SIDEBAR_HOVER = "#3c4043"
+SIDEBAR_DIVIDER = "#3c4043"
+SIDEBAR_SUB = "#9aa0a6"
+INFO_BG = "#f0f7ff"
 
-STATUS_COLORS = {
-    "available": SUCCESS, "occupied": DANGER,
-    "maintenance": WARNING, "reserved": "#3b82f6",
-    "active": SUCCESS, "completed": TEXT_SEC,
-    "cancelled": DANGER, "pending": WARNING,
-    "confirmed": "#3b82f6", "registration": "#3b82f6",
-    "in_progress": SUCCESS,
-}
+STATUS_COLORS = {}
 STATUS_LABELS = {
     "available": "فارغة", "occupied": "مشغولة",
     "maintenance": "صيانة", "reserved": "محجوزة",
@@ -104,11 +161,16 @@ class App(ctk.CTk):
         self.title("Marouf - PlayStation Cafe Manager")
         self.geometry("1280x800")
         self.minsize(1024, 600)
-        self.configure(fg_color=BG)
 
         self.pages = {}
-        self.current_frame = None
+        self.current_page_key = None
         self._page_classes = {}
+        self.nav_buttons = {}
+
+        # Load saved theme (default: blue_light)
+        self.current_theme = self._load_theme()
+        _apply_theme_colors(self.current_theme)
+        self.configure(fg_color=BG)
 
         # Build UI
         self._build_sidebar()
@@ -116,14 +178,75 @@ class App(ctk.CTk):
         self._register_page_classes()
         self.show_page("dashboard")
 
+    # ── Theme Management ──
+    def _load_theme(self):
+        db = SessionLocal()
+        try:
+            name = get_setting(db, "theme_name", "blue_light")
+            if name in THEMES:
+                return name
+        except Exception:
+            pass
+        finally:
+            db.close()
+        return "blue_light"
+
+    def apply_theme(self, theme_name):
+        """Apply a new theme and rebuild the entire UI."""
+        if theme_name == self.current_theme:
+            return
+        if theme_name not in THEMES:
+            return
+
+        log.info(f"Switching theme: {self.current_theme} -> {theme_name}")
+        self.current_theme = theme_name
+
+        # Save to DB
+        db = SessionLocal()
+        try:
+            set_setting(db, "theme_name", theme_name)
+        finally:
+            db.close()
+
+        # Apply colors to module globals
+        _apply_theme_colors(theme_name)
+
+        # Remember current page
+        saved_key = self.current_page_key or "dashboard"
+
+        # Destroy all cached pages
+        for key in list(self.pages.keys()):
+            try:
+                self.pages[key].destroy()
+            except Exception:
+                pass
+        self.pages.clear()
+        self.current_frame = None
+
+        # Destroy sidebar & content
+        try:
+            self.sidebar.destroy()
+        except Exception:
+            pass
+        try:
+            self.content.destroy()
+        except Exception:
+            pass
+
+        # Rebuild with new colors
+        self.configure(fg_color=BG)
+        self._build_sidebar()
+        self._build_content()
+        self.show_page(saved_key)
+
     # ── Sidebar ──
     def _build_sidebar(self):
         self.sidebar = ctk.CTkFrame(self, width=220, corner_radius=0, fg_color=SIDEBAR_BG)
 
         # Bottom items first (so they stay at bottom)
         ctk.CTkLabel(self.sidebar, text="v1.0", font=("Segoe UI", 10),
-                      text_color="#9aa0a6").pack(side="bottom", pady=8)
-        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(
+                      text_color=SIDEBAR_SUB).pack(side="bottom", pady=8)
+        ctk.CTkFrame(self.sidebar, height=1, fg_color=SIDEBAR_DIVIDER).pack(
             fill="x", padx=10, pady=5, side="bottom"
         )
 
@@ -135,9 +258,9 @@ class App(ctk.CTk):
         ctk.CTkLabel(logo_frame, text="Marouf", font=("Segoe UI", 20, "bold"),
                       text_color="white").pack(pady=(4, 0))
         ctk.CTkLabel(logo_frame, text="PlayStation Cafe", font=("Segoe UI", 11),
-                      text_color="#9aa0a6").pack()
+                      text_color=SIDEBAR_SUB).pack()
 
-        ctk.CTkFrame(self.sidebar, height=1, fg_color="#3c4043").pack(
+        ctk.CTkFrame(self.sidebar, height=1, fg_color=SIDEBAR_DIVIDER).pack(
             fill="x", padx=10, pady=5
         )
 
@@ -160,9 +283,9 @@ class App(ctk.CTk):
         for key, label in nav_items:
             btn = ctk.CTkButton(
                 self.sidebar, text=label, font=("Segoe UI", 13),
-                fg_color="transparent", text_color="#e8eaed",
+                fg_color="transparent", text_color=SIDEBAR_TEXT,
                 anchor="w", height=42, corner_radius=10,
-                hover_color="#3c4043",
+                hover_color=SIDEBAR_HOVER,
                 command=lambda k=key: self.show_page(k),
             )
             btn.pack(fill="x", padx=10, pady=2)
@@ -227,6 +350,7 @@ class App(ctk.CTk):
     # ── Page Switching ──
     def show_page(self, key):
         log.info(f"show_page('{key}')")
+        self.current_page_key = key
 
         # Hide current page
         if self.current_frame:

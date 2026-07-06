@@ -1,4 +1,5 @@
 from main import *
+from themes import THEMES, THEME_ORDER
 from database.db import SessionLocal, DB_PATH, init_db, engine
 from services.services import (
     get_setting, set_setting, get_hourly_rate,
@@ -14,7 +15,7 @@ import os
 class SettingsPage(BasePage):
     """صفحة الإعدادات"""
 
-    TABS = ["عام", "الأسعار", "الباقات", "الألعاب", "النظام"]
+    TABS = ["عام", "المظهر", "الأسعار", "الباقات", "الألعاب", "النظام"]
     PLATFORMS = ["PS5", "PS4", "Xbox Series X", "Xbox One", "PC", "Nintendo Switch"]
 
     def __init__(self, master, app):
@@ -40,7 +41,7 @@ class SettingsPage(BasePage):
         self.seg = ctk.CTkSegmentedButton(
             seg_frame, values=self.TABS, command=self._show_tab,
             font=("Segoe UI", 13), height=40, corner_radius=10,
-            selected_color=PRIMARY, selected_hover_color="#1557b0"
+            selected_color=PRIMARY, selected_hover_color=PRIMARY_HOVER
         )
         self.seg.pack(fill="x")
 
@@ -55,6 +56,8 @@ class SettingsPage(BasePage):
 
         if tab_name == "عام":
             self._build_general_tab()
+        elif tab_name == "المظهر":
+            self._build_appearance_tab()
         elif tab_name == "الأسعار":
             self._build_pricing_tab()
         elif tab_name == "الباقات":
@@ -76,7 +79,7 @@ class SettingsPage(BasePage):
             font=("Segoe UI", 16, "bold"), text_color=TEXT, anchor="e"
         ).pack(fill="x", padx=20, pady=(15, 10))
 
-        ctk.CTkFrame(card, height=1, fg_color="#e5e7eb").pack(fill="x", padx=20)
+        ctk.CTkFrame(card, height=1, fg_color=DIVIDER).pack(fill="x", padx=20)
 
         form = ctk.CTkFrame(card, fg_color="transparent")
         form.pack(fill="x", padx=20, pady=15)
@@ -117,7 +120,7 @@ class SettingsPage(BasePage):
 
         ctk.CTkButton(
             btn_frame, text="💾 حفظ الإعدادات العامة", height=38, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save_general
         ).pack(anchor="e", padx=15)
 
@@ -136,6 +139,99 @@ class SettingsPage(BasePage):
             db.close()
 
     # ════════════════════════════════════════════════════════
+    #  APPEARANCE TAB
+    # ════════════════════════════════════════════════════════
+    def _build_appearance_tab(self):
+        card = ctk.CTkFrame(self.content, fg_color=CARD_BG, corner_radius=12)
+        card.pack(fill="x", pady=5)
+
+        ctk.CTkLabel(
+            card, text="🎨 المظهر والثيمات",
+            font=("Segoe UI", 16, "bold"), text_color=TEXT, anchor="e"
+        ).pack(fill="x", padx=20, pady=(15, 5))
+
+        ctk.CTkLabel(
+            card, text="اختر الثيم المناسب لك — سيتم تطبيق التغييرات فوراً",
+            font=("Segoe UI", 12), text_color=TEXT_SEC, anchor="e"
+        ).pack(fill="x", padx=20, pady=(0, 10))
+
+        ctk.CTkFrame(card, height=1, fg_color=DIVIDER).pack(fill="x", padx=20)
+
+        # Theme grid
+        grid_frame = ctk.CTkFrame(card, fg_color="transparent")
+        grid_frame.pack(fill="x", padx=20, pady=15)
+        grid_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+        current_theme = self.app.current_theme
+        self._theme_buttons = {}
+
+        for i, theme_key in enumerate(THEME_ORDER):
+            t = THEMES[theme_key]
+            row = i // 4
+            col = i % 4
+
+            # Theme card
+            is_active = (theme_key == current_theme)
+            border_color = PRIMARY if is_active else DIVIDER
+
+            theme_card = ctk.CTkFrame(
+                grid_frame, fg_color=CARD_BG, corner_radius=10,
+                border_width=2 if is_active else 1,
+                border_color=border_color
+            )
+            theme_card.grid(row=row, column=col, padx=8, pady=8, sticky="nsew")
+
+            # Color preview strip
+            preview = ctk.CTkFrame(theme_card, height=6, corner_radius=3, fg_color=t["PRIMARY"])
+            preview.pack(fill="x", padx=8, pady=(10, 0))
+
+            # Theme name
+            ctk.CTkLabel(
+                theme_card, text=t["label"],
+                font=("Segoe UI", 12, "bold"), text_color=TEXT, anchor="center"
+            ).pack(pady=(8, 2))
+
+            # Mode badge
+            mode_text = "داكن" if t["mode"] == "dark" else "فاتح"
+            ctk.CTkLabel(
+                theme_card, text=mode_text,
+                font=("Segoe UI", 10), text_color=TEXT_SEC, anchor="center"
+            ).pack(pady=(0, 4))
+
+            # Color dots preview
+            dots_frame = ctk.CTkFrame(theme_card, fg_color="transparent")
+            dots_frame.pack(pady=(0, 8))
+
+            for color_key in ["PRIMARY", "SUCCESS", "WARNING", "DANGER"]:
+                dot = ctk.CTkFrame(
+                    dots_frame, width=18, height=18, corner_radius=9,
+                    fg_color=t[color_key]
+                )
+                dot.pack(side="right", padx=3)
+
+            # Select button
+            if is_active:
+                btn = ctk.CTkButton(
+                    theme_card, text="✅ نشط", height=30, corner_radius=8,
+                    font=("Segoe UI", 11, "bold"), fg_color=PRIMARY,
+                    state="disabled"
+                )
+            else:
+                btn = ctk.CTkButton(
+                    theme_card, text="اختيار", height=30, corner_radius=8,
+                    font=("Segoe UI", 11), fg_color="transparent",
+                    border_width=1, border_color=PRIMARY,
+                    text_color=PRIMARY, hover_color=PRIMARY,
+                    hover_text_color="white",
+                    command=lambda k=theme_key: self._apply_theme(k)
+                )
+            btn.pack(fill="x", padx=10, pady=(0, 10))
+
+    def _apply_theme(self, theme_name):
+        """تطبيق الثيم المختار وإعادة بناء الواجهة"""
+        self.app.apply_theme(theme_name)
+
+    # ════════════════════════════════════════════════════════
     #  PRICING TAB
     # ════════════════════════════════════════════════════════
     def _build_pricing_tab(self):
@@ -147,7 +243,7 @@ class SettingsPage(BasePage):
             font=("Segoe UI", 16, "bold"), text_color=TEXT, anchor="e"
         ).pack(fill="x", padx=20, pady=(15, 10))
 
-        ctk.CTkFrame(card, height=1, fg_color="#e5e7eb").pack(fill="x", padx=20)
+        ctk.CTkFrame(card, height=1, fg_color=DIVIDER).pack(fill="x", padx=20)
 
         form = ctk.CTkFrame(card, fg_color="transparent")
         form.pack(fill="x", padx=20, pady=15)
@@ -187,7 +283,7 @@ class SettingsPage(BasePage):
 
         ctk.CTkButton(
             btn_frame, text="💾 حفظ الأسعار وتحديث المحطات", height=38, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save_pricing
         ).pack(anchor="e", padx=15)
 
@@ -238,7 +334,7 @@ class SettingsPage(BasePage):
             font=("Segoe UI", 16, "bold"), text_color=TEXT, anchor="e"
         ).pack(side="right", fill="x", expand=True)
 
-        ctk.CTkFrame(list_card, height=1, fg_color="#e5e7eb").pack(fill="x", padx=20, pady=5)
+        ctk.CTkFrame(list_card, height=1, fg_color=DIVIDER).pack(fill="x", padx=20, pady=5)
 
         # Column headers
         col_hdr = ctk.CTkFrame(list_card, fg_color="transparent")
@@ -271,7 +367,7 @@ class SettingsPage(BasePage):
         else:
             for p in packages:
                 hourly = round(p.price / p.hours, 2) if p.hours > 0 else 0
-                row = ctk.CTkFrame(pkg_container, fg_color="#f9fafb", corner_radius=8)
+                row = ctk.CTkFrame(pkg_container, fg_color=ROW_BG, corner_radius=8)
                 row.pack(fill="x", pady=3)
 
                 ctk.CTkLabel(row, text=p.name, font=("Segoe UI", 12),
@@ -285,7 +381,7 @@ class SettingsPage(BasePage):
 
                 ctk.CTkButton(
                     row, text="🗑️", width=40, height=30, corner_radius=8,
-                    font=("", 12), fg_color="transparent", hover_color="#fee2e2",
+                    font=("", 12), fg_color="transparent", hover_color=DELETE_HOVER,
                     command=lambda pid=p.id: self._delete_package(pid)
                 ).pack(side="left", padx=6, pady=8)
 
@@ -317,7 +413,7 @@ class SettingsPage(BasePage):
         self.pkg_price.pack(side="right", padx=(0, 15))
 
         ctk.CTkButton(
-            form, text="➕ إضافة", fg_color=SUCCESS, hover_color="#16a34a",
+            form, text="➕ إضافة", fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
             width=100, height=36, font=("Segoe UI", 13, "bold"),
             command=self._add_package
         ).pack(side="left")
@@ -378,7 +474,7 @@ class SettingsPage(BasePage):
             font=("Segoe UI", 16, "bold"), text_color=TEXT, anchor="e"
         ).pack(side="right", fill="x", expand=True)
 
-        ctk.CTkFrame(list_card, height=1, fg_color="#e5e7eb").pack(fill="x", padx=20, pady=5)
+        ctk.CTkFrame(list_card, height=1, fg_color=DIVIDER).pack(fill="x", padx=20, pady=5)
 
         # Column headers
         col_hdr = ctk.CTkFrame(list_card, fg_color="transparent")
@@ -410,7 +506,7 @@ class SettingsPage(BasePage):
             ).pack(pady=20)
         else:
             for g in games:
-                row = ctk.CTkFrame(games_container, fg_color="#f9fafb", corner_radius=8)
+                row = ctk.CTkFrame(games_container, fg_color=ROW_BG, corner_radius=8)
                 row.pack(fill="x", pady=3)
 
                 ctk.CTkLabel(row, text=g.name, font=("Segoe UI", 12),
@@ -422,7 +518,7 @@ class SettingsPage(BasePage):
 
                 ctk.CTkButton(
                     row, text="🗑️", width=40, height=30, corner_radius=8,
-                    font=("", 12), fg_color="transparent", hover_color="#fee2e2",
+                    font=("", 12), fg_color="transparent", hover_color=DELETE_HOVER,
                     command=lambda gid=g.id: self._delete_game(gid)
                 ).pack(side="left", padx=6, pady=8)
 
@@ -457,7 +553,7 @@ class SettingsPage(BasePage):
         self.game_copies.insert(0, "1")
 
         ctk.CTkButton(
-            form, text="➕ إضافة", fg_color=SUCCESS, hover_color="#16a34a",
+            form, text="➕ إضافة", fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
             width=100, height=36, font=("Segoe UI", 13, "bold"),
             command=self._add_game
         ).pack(side="left")
@@ -516,7 +612,7 @@ class SettingsPage(BasePage):
             font=("Segoe UI", 16, "bold"), text_color=TEXT, anchor="e"
         ).pack(fill="x", padx=20, pady=(15, 10))
 
-        ctk.CTkFrame(info_card, height=1, fg_color="#e5e7eb").pack(fill="x", padx=20)
+        ctk.CTkFrame(info_card, height=1, fg_color=DIVIDER).pack(fill="x", padx=20)
 
         info_form = ctk.CTkFrame(info_card, fg_color="transparent")
         info_form.pack(fill="x", padx=20, pady=15)
@@ -572,7 +668,7 @@ class SettingsPage(BasePage):
 
         ctk.CTkButton(
             btn_frame, text="🗑️ إعادة تعيين قاعدة البيانات", height=38, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=DANGER, hover_color="#dc2626",
+            font=("Segoe UI", 13, "bold"), fg_color=DANGER, hover_color=DANGER_HOVER,
             command=self._reset_db
         ).pack(anchor="e", padx=15)
 

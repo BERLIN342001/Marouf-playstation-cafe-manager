@@ -109,7 +109,7 @@ class DashboardPage(BasePage):
                 text_color=TEXT_SEC, anchor="e"
             ).pack(side="right", padx=8)
 
-        ctk.CTkFrame(self.sessions_container, height=1, fg_color="#e0e0e0").pack(fill="x", pady=(0, 8))
+        ctk.CTkFrame(self.sessions_container, height=1, fg_color=DIVIDER).pack(fill="x", pady=(0, 8))
 
         # صفوف الجلسات
         now = datetime.now()

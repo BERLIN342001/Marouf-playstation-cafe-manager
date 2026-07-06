@@ -116,13 +116,13 @@ class AddItemDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="💾 إضافة", width=120, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -220,13 +220,13 @@ class UpdateQtyDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="💾 تحديث", width=120, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -287,12 +287,12 @@ class InventoryItemCard(ctk.CTkFrame):
 
         ctk.CTkButton(
             btn_frame, text="🗑️", width=30, height=30, corner_radius=8,
-            font=("", 13), fg_color="transparent", hover_color="#fee2e2",
+            font=("", 13), fg_color="transparent", hover_color=DELETE_HOVER,
             command=lambda: self.on_delete(it) if self.on_delete else None
         ).pack(side="left", padx=2)
 
         # Separator
-        ctk.CTkFrame(self, height=1, fg_color="#e5e7eb").pack(fill="x", padx=14, pady=4)
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", padx=14, pady=4)
 
         # Category
         ctk.CTkLabel(
@@ -372,7 +372,7 @@ class InventoryPage(BasePage):
         # Add item button
         ctk.CTkButton(
             inner, text="➕ إضافة صنف", height=38, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color="#16a34a",
+            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
             command=self._add_item
         ).pack(side="left")
 

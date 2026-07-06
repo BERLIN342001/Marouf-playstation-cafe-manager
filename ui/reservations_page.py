@@ -94,13 +94,13 @@ class CreateReservationDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="📅 إنشاء حجز", width=140, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -186,7 +186,7 @@ class ReservationCard(ctk.CTkFrame):
         ).pack(side="left", padx=5)
 
         # Separator
-        ctk.CTkFrame(self, height=1, fg_color="#e5e7eb").pack(fill="x", padx=15, pady=4)
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", padx=15, pady=4)
 
         # Details row
         details = ctk.CTkFrame(self, fg_color="transparent")
@@ -216,26 +216,26 @@ class ReservationCard(ctk.CTkFrame):
 
         if r.status == "pending":
             ctk.CTkButton(
-                btn_frame, text="✅ تأكيد", fg_color=PRIMARY, hover_color="#1557b0",
+                btn_frame, text="✅ تأكيد", fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
                 width=100, height=32, font=("Segoe UI", 12),
                 command=lambda: self.on_confirm(r.id) if self.on_confirm else None
             ).pack(side="right", padx=4)
 
             ctk.CTkButton(
-                btn_frame, text="❌ إلغاء", fg_color=DANGER, hover_color="#dc2626",
+                btn_frame, text="❌ إلغاء", fg_color=DANGER, hover_color=DANGER_HOVER,
                 width=100, height=32, font=("Segoe UI", 12),
                 command=lambda: self.on_cancel(r.id) if self.on_cancel else None
             ).pack(side="left", padx=4)
 
         elif r.status == "confirmed":
             ctk.CTkButton(
-                btn_frame, text="✅ إكمال", fg_color=SUCCESS, hover_color="#16a34a",
+                btn_frame, text="✅ إكمال", fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
                 width=100, height=32, font=("Segoe UI", 12),
                 command=lambda: self.on_complete(r.id) if self.on_complete else None
             ).pack(side="right", padx=4)
 
             ctk.CTkButton(
-                btn_frame, text="❌ إلغاء", fg_color=DANGER, hover_color="#dc2626",
+                btn_frame, text="❌ إلغاء", fg_color=DANGER, hover_color=DANGER_HOVER,
                 width=100, height=32, font=("Segoe UI", 12),
                 command=lambda: self.on_cancel(r.id) if self.on_cancel else None
             ).pack(side="left", padx=4)
@@ -308,7 +308,7 @@ class ReservationsPage(BasePage):
         # New reservation button
         ctk.CTkButton(
             inner, text="➕ حجز جديد", height=36, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._new_reservation
         ).pack(side="left")
 

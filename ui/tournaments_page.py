@@ -90,13 +90,13 @@ class CreateTournamentDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="🏆 إنشاء", width=140, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -178,13 +178,13 @@ class RegisterDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="✅ تسجيل", width=140, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color="#16a34a",
+            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -286,7 +286,7 @@ class ParticipantsDialog(ctk.CTkToplevel):
 
             if not p.is_eliminated:
                 ctk.CTkButton(
-                    row, text="إقصاء", fg_color=DANGER, hover_color="#dc2626",
+                    row, text="إقصاء", fg_color=DANGER, hover_color=DANGER_HOVER,
                     width=80, height=28, font=("Segoe UI", 11),
                     command=lambda pid=p.id: self._eliminate(pid)
                 ).grid(row=0, column=3, padx=8, pady=8)
@@ -338,7 +338,7 @@ class TournamentCard(ctk.CTkFrame):
         ).pack(side="left", padx=5)
 
         # Separator
-        ctk.CTkFrame(self, height=1, fg_color="#e5e7eb").pack(fill="x", padx=15, pady=4)
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", padx=15, pady=4)
 
         # Details
         details = ctk.CTkFrame(self, fg_color="transparent")
@@ -365,21 +365,21 @@ class TournamentCard(ctk.CTkFrame):
         btn_frame.pack(fill="x", padx=15, pady=(6, 12))
 
         ctk.CTkButton(
-            btn_frame, text="👥 المشاركون", fg_color=PRIMARY, hover_color="#1557b0",
+            btn_frame, text="👥 المشاركون", fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             width=110, height=32, font=("Segoe UI", 12),
             command=lambda: self.on_participants(t) if self.on_participants else None
         ).pack(side="right", padx=4)
 
         if t.status == "registration":
             ctk.CTkButton(
-                btn_frame, text="✅ تسجيل لاعب", fg_color=SUCCESS, hover_color="#16a34a",
+                btn_frame, text="✅ تسجيل لاعب", fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
                 width=120, height=32, font=("Segoe UI", 12),
                 command=lambda: self.on_register(t) if self.on_register else None
             ).pack(side="right", padx=4)
 
         if t.status == "registration":
             ctk.CTkButton(
-                btn_frame, text="▶️ بدء", fg_color=WARNING, hover_color="#d97706",
+                btn_frame, text="▶️ بدء", fg_color=WARNING, hover_color=WARNING_HOVER,
                 text_color="black", width=90, height=32, font=("Segoe UI", 12, "bold"),
                 command=lambda: self.on_status_change(t.id, "in_progress")
                          if self.on_status_change else None
@@ -387,7 +387,7 @@ class TournamentCard(ctk.CTkFrame):
 
         elif t.status == "in_progress":
             ctk.CTkButton(
-                btn_frame, text="✅ إكمال", fg_color=SUCCESS, hover_color="#16a34a",
+                btn_frame, text="✅ إكمال", fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
                 width=90, height=32, font=("Segoe UI", 12, "bold"),
                 command=lambda: self.on_status_change(t.id, "completed")
                          if self.on_status_change else None
@@ -427,7 +427,7 @@ class TournamentsPage(BasePage):
 
         ctk.CTkButton(
             inner, text="➕ إنشاء بطولة", height=36, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._create_tournament
         ).pack(side="left")
 

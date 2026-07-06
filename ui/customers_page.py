@@ -94,13 +94,13 @@ class CustomerDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="💾 حفظ", width=120, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -176,7 +176,7 @@ class ChargeDialog(ctk.CTkToplevel):
         ).pack(pady=(20, 10))
 
         # Customer info
-        info = ctk.CTkFrame(self, fg_color="#f0f7ff", corner_radius=10)
+        info = ctk.CTkFrame(self, fg_color=INFO_BG, corner_radius=10)
         info.pack(fill="x", padx=20, pady=(0, 15))
 
         ctk.CTkLabel(
@@ -212,13 +212,13 @@ class ChargeDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="💰 شحن", width=140, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color="#16a34a",
+            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -290,12 +290,12 @@ class CustomerCard(ctk.CTkFrame):
         # Delete button
         ctk.CTkButton(
             btn_frame, text="🗑️", width=30, height=30, corner_radius=8,
-            font=("", 13), fg_color="transparent", hover_color="#fee2e2",
+            font=("", 13), fg_color="transparent", hover_color=DELETE_HOVER,
             command=lambda: self.on_delete(c) if self.on_delete else None
         ).pack(side="left", padx=2)
 
         # Separator
-        ctk.CTkFrame(self, height=1, fg_color="#e5e7eb").pack(fill="x", padx=14, pady=4)
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", padx=14, pady=4)
 
         # Phone
         ctk.CTkLabel(
@@ -321,7 +321,7 @@ class CustomerCard(ctk.CTkFrame):
 
         ctk.CTkLabel(
             stats, text=f"⭐ النقاط: {c.points}",
-            font=("Segoe UI", 13, "bold"), text_color="#d97706", anchor="w"
+            font=("Segoe UI", 13, "bold"), text_color="WARNING_HOVER", anchor="w"
         ).pack(side="left")
 
 
@@ -372,7 +372,7 @@ class CustomersPage(BasePage):
         # Add customer button
         ctk.CTkButton(
             inner, text="➕ إضافة عميل", height=36, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._add_customer
         ).pack(side="left")
 

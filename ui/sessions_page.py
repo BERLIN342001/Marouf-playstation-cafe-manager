@@ -84,13 +84,13 @@ class StartSessionDialog(ctk.CTkToplevel):
             text_color=TEXT, anchor="e"
         ).grid(row=1, column=0, sticky="e", **pad)
 
-        customer_names = ["زائر"] + [c.name for c in self.all_customers]
+        self._customer_names = ["زائر"] + [c.name for c in self.all_customers]
         customer_ids = [None] + [c.id for c in self.all_customers]
         self._customer_ids = customer_ids
 
         self.customer_var = ctk.StringVar(value="زائر")
         self.customer_combo = ctk.CTkComboBox(
-            form, values=customer_names, variable=self.customer_var,
+            form, values=self._customer_names, variable=self.customer_var,
             width=280, height=38, font=("Segoe UI", 12)
         )
         self.customer_combo.grid(row=1, column=1, sticky="w", **pad)
@@ -101,7 +101,7 @@ class StartSessionDialog(ctk.CTkToplevel):
             text_color=TEXT, anchor="e"
         ).grid(row=2, column=0, sticky="e", **pad)
 
-        package_names = ["بدون باقة"] + [
+        self._package_names = ["بدون باقة"] + [
             f"{p.name} ({p.hours} ساعة - {fc(p.price)})"
             for p in self.all_packages
         ]
@@ -110,7 +110,7 @@ class StartSessionDialog(ctk.CTkToplevel):
 
         self.package_var = ctk.StringVar(value="بدون باقة")
         self.package_combo = ctk.CTkComboBox(
-            form, values=package_names, variable=self.package_var,
+            form, values=self._package_names, variable=self.package_var,
             width=280, height=38, font=("Segoe UI", 12)
         )
         self.package_combo.grid(row=2, column=1, sticky="w", **pad)
@@ -122,13 +122,13 @@ class StartSessionDialog(ctk.CTkToplevel):
             text_color=TEXT, anchor="e"
         ).grid(row=3, column=0, sticky="e", **pad)
 
-        game_names = ["بدون لعبة"] + [g.name for g in self.all_games]
+        self._game_names = ["بدون لعبة"] + [g.name for g in self.all_games]
         game_ids = [None] + [g.id for g in self.all_games]
         self._game_ids = game_ids
 
         self.game_var = ctk.StringVar(value="بدون لعبة")
         self.game_combo = ctk.CTkComboBox(
-            form, values=game_names, variable=self.game_var,
+            form, values=self._game_names, variable=self.game_var,
             width=280, height=38, font=("Segoe UI", 12)
         )
         self.game_combo.grid(row=3, column=1, sticky="w", **pad)
@@ -139,13 +139,13 @@ class StartSessionDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="▶ بدء الجلسة", width=160, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color="#16a34a",
+            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -168,17 +168,29 @@ class StartSessionDialog(ctk.CTkToplevel):
             return
 
         # Customer
-        customer_idx = self.customer_combo.current()
-        customer_id = self._customer_ids[customer_idx] if customer_idx >= 0 else None
+        customer_name = self.customer_var.get()
+        try:
+            cidx = self._customer_names.index(customer_name)
+            customer_id = self._customer_ids[cidx]
+        except (ValueError, IndexError):
+            customer_id = None
 
         # Package
-        package_idx = self.package_combo.current()
-        package_id = self._package_ids[package_idx] if package_idx >= 0 else None
+        package_name = self.package_var.get()
+        try:
+            pidx = self._package_names.index(package_name)
+            package_id = self._package_ids[pidx]
+        except (ValueError, IndexError):
+            package_id = None
         is_package = package_id is not None
 
         # Game
-        game_idx = self.game_combo.current()
-        game_id = self._game_ids[game_idx] if game_idx >= 0 else None
+        game_name = self.game_var.get()
+        try:
+            gidx = self._game_names.index(game_name)
+            game_id = self._game_ids[gidx]
+        except (ValueError, IndexError):
+            game_id = None
         game_ids = [game_id] if game_id else None
 
         self.result = {
@@ -231,7 +243,7 @@ class EndSessionDialog(ctk.CTkToplevel):
         ).pack(pady=(20, 10))
 
         # Info frame
-        info = ctk.CTkFrame(self, fg_color="#f0f7ff", corner_radius=10)
+        info = ctk.CTkFrame(self, fg_color=INFO_BG, corner_radius=10)
         info.pack(fill="x", padx=20, pady=(0, 15))
 
         ctk.CTkLabel(
@@ -280,13 +292,13 @@ class EndSessionDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame, text="إلغاء", width=120, height=38,
-            font=("Segoe UI", 13), fg_color="#9ca3af", hover_color="#6b7280",
+            font=("Segoe UI", 13), fg_color=SECONDARY, hover_color=SECONDARY_HOVER,
             command=self._cancel
         ).pack(side="right", padx=8)
 
         ctk.CTkButton(
             btn_frame, text="✅ إنهاء وادفع", width=160, height=38,
-            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 13, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             command=self._save
         ).pack(side="right", padx=8)
 
@@ -343,7 +355,7 @@ class ActiveSessionCard(ctk.CTkFrame):
         ).pack(side="left")
 
         # Separator
-        ctk.CTkFrame(self, height=1, fg_color="#e5e7eb").pack(fill="x", padx=14, pady=4)
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", padx=14, pady=4)
 
         # Customer
         ctk.CTkLabel(
@@ -372,7 +384,7 @@ class ActiveSessionCard(ctk.CTkFrame):
             ).pack(fill="x", padx=14, pady=2)
 
         # Separator
-        ctk.CTkFrame(self, height=1, fg_color="#e5e7eb").pack(fill="x", padx=14, pady=8)
+        ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", padx=14, pady=8)
 
         # Buttons
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -380,14 +392,14 @@ class ActiveSessionCard(ctk.CTkFrame):
 
         ctk.CTkButton(
             btn_frame, text="⏹️ إنهاء", width=100, height=34,
-            font=("Segoe UI", 12, "bold"), fg_color=PRIMARY, hover_color="#1557b0",
+            font=("Segoe UI", 12, "bold"), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
             corner_radius=8,
             command=lambda: self.on_end(self.session) if self.on_end else None
         ).pack(side="right", padx=4)
 
         ctk.CTkButton(
             btn_frame, text="❌ إلغاء", width=100, height=34,
-            font=("Segoe UI", 12), fg_color="#9ca3af", hover_color=DANGER,
+            font=("Segoe UI", 12), fg_color=SECONDARY, hover_color=DANGER,
             corner_radius=8,
             command=lambda: self.on_cancel(self.session) if self.on_cancel else None
         ).pack(side="right", padx=4)
@@ -434,14 +446,14 @@ class SessionsPage(BasePage):
             font=("Segoe UI", 13, "bold"),
             command=self._on_tab_change,
             selected_color=PRIMARY,
-            selected_hover_color="#1557b0",
+            selected_hover_color=PRIMARY_HOVER,
         )
         self.seg_btn.pack(side="right", padx=(0, 10))
 
         # Start session button
         ctk.CTkButton(
             inner, text="▶ بدء جلسة", height=38, corner_radius=8,
-            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color="#16a34a",
+            font=("Segoe UI", 13, "bold"), fg_color=SUCCESS, hover_color=SUCCESS_HOVER,
             command=self._start_session
         ).pack(side="left")
 
@@ -633,7 +645,7 @@ class SessionsPage(BasePage):
             ).pack(side="right", padx=4)
 
         ctk.CTkFrame(
-            self.history_container, height=1, fg_color="#e0e0e0"
+            self.history_container, height=1, fg_color=DIVIDER
         ).pack(fill="x", pady=(0, 6))
 
         # Payment method labels
