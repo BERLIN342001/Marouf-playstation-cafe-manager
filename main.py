@@ -163,6 +163,7 @@ class App(ctk.CTk):
         self.minsize(1024, 600)
 
         self.pages = {}
+        self.current_frame = None
         self.current_page_key = None
         self._page_classes = {}
         self.nav_buttons = {}
@@ -321,31 +322,29 @@ class App(ctk.CTk):
 
     # ── Page Registration (lazy) ──
     def _register_page_classes(self):
-        from ui.dashboard import DashboardPage
-        from ui.stations_page import StationsPage
-        from ui.sessions_page import SessionsPage
-        from ui.customers_page import CustomersPage
-        from ui.billing_page import BillingPage
-        from ui.inventory_page import InventoryPage
-        from ui.employees_page import EmployeesPage
-        from ui.reports_page import ReportsPage
-        from ui.tournaments_page import TournamentsPage
-        from ui.reservations_page import ReservationsPage
-        from ui.settings_page import SettingsPage
-
-        self._page_classes = {
-            "dashboard": DashboardPage,
-            "stations": StationsPage,
-            "sessions": SessionsPage,
-            "customers": CustomersPage,
-            "billing": BillingPage,
-            "inventory": InventoryPage,
-            "employees": EmployeesPage,
-            "reports": ReportsPage,
-            "tournaments": TournamentsPage,
-            "reservations": ReservationsPage,
-            "settings": SettingsPage,
+        page_modules = {
+            "dashboard": ("ui.dashboard", "DashboardPage"),
+            "stations": ("ui.stations_page", "StationsPage"),
+            "sessions": ("ui.sessions_page", "SessionsPage"),
+            "customers": ("ui.customers_page", "CustomersPage"),
+            "billing": ("ui.billing_page", "BillingPage"),
+            "inventory": ("ui.inventory_page", "InventoryPage"),
+            "employees": ("ui.employees_page", "EmployeesPage"),
+            "reports": ("ui.reports_page", "ReportsPage"),
+            "tournaments": ("ui.tournaments_page", "TournamentsPage"),
+            "reservations": ("ui.reservations_page", "ReservationsPage"),
+            "settings": ("ui.settings_page", "SettingsPage"),
         }
+
+        self._page_classes = {}
+        for key, (mod_path, cls_name) in page_modules.items():
+            try:
+                mod = __import__(mod_path, fromlist=[cls_name])
+                cls = getattr(mod, cls_name)
+                self._page_classes[key] = cls
+                log.info(f"Registered page '{key}' -> {cls_name}")
+            except Exception as e:
+                log.error(f"Failed to register page '{key}': {e}\n{traceback.format_exc()}")
 
     # ── Page Switching ──
     def show_page(self, key):
@@ -468,7 +467,11 @@ if __name__ == "__main__":
         app.mainloop()
     except Exception as e:
         log.critical(f"FATAL: {e}\n{traceback.format_exc()}")
+        error_msg = f"حدث خطأ في تشغيل البرنامج:\n\n{e}\n\nتفاصيل:\n{traceback.format_exc()}"
         try:
-            messagebox.showerror("خطأ", f"حدث خطأ في تشغيل البرنامج:\n\n{e}\n\nتفاصيل:\n{traceback.format_exc()}")
+            root = tk.Tk()
+            root.withdraw()
+            messagebox.showerror("خطأ", error_msg)
+            root.destroy()
         except Exception:
-            print(f"FATAL: {e}\n{traceback.format_exc()}", file=sys.stderr)
+            print(error_msg, file=sys.stderr)

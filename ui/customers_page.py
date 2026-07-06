@@ -321,7 +321,7 @@ class CustomerCard(ctk.CTkFrame):
 
         ctk.CTkLabel(
             stats, text=f"⭐ النقاط: {c.points}",
-            font=("Segoe UI", 13, "bold"), text_color="WARNING_HOVER", anchor="w"
+            font=("Segoe UI", 13, "bold"), text_color=WARNING_HOVER, anchor="w"
         ).pack(side="left")
 
 
