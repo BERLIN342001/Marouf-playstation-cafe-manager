@@ -333,8 +333,8 @@ class App(ctk.CTk):
         )
         self.page_title_label.pack(side="left", padx=20, pady=10)
 
-        # Scrollable pages container
-        self.pages_frame = ctk.CTkScrollableFrame(
+        # Pages container (not scrollable — each page handles its own scrolling)
+        self.pages_frame = ctk.CTkFrame(
             self.content, corner_radius=0, fg_color=BG
         )
         self.pages_frame.pack(fill="both", expand=True)

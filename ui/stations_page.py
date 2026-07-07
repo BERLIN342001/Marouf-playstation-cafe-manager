@@ -282,7 +282,7 @@ class StationsPage(BasePage):
         ).pack(side="left")
 
         # ── شبكة البطاقات ──
-        self.cards_grid = ctk.CTkFrame(self, fg_color="transparent")
+        self.cards_grid = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.cards_grid.pack(fill="both", expand=True)
         self.cards_grid.grid_columnconfigure((0, 1, 2), weight=1)
 

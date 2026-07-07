@@ -103,6 +103,10 @@ class EmployeesPage(BasePage):
         ctk.CTkButton(toolbar, text="➕ إضافة موظف", fg_color=PRIMARY, corner_radius=8,
                        command=self._add).pack(side="left", padx=10, pady=10)
 
+        # Scrollable data area
+        self._scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self._scroll.pack(fill="both", expand=True)
+
         if self.tab == 0:
             self._show_employees()
         else:
@@ -117,11 +121,11 @@ class EmployeesPage(BasePage):
         try:
             employees = get_employees(db)
             if not employees:
-                ctk.CTkLabel(self, text="لا يوجد موظفين", font=("Segoe UI", 15), text_color=TEXT_SEC).pack(pady=40)
+                ctk.CTkLabel(self._scroll, text="لا يوجد موظفين", font=("Segoe UI", 15), text_color=TEXT_SEC).pack(pady=40)
                 return
 
             for emp in employees:
-                card = ctk.CTkFrame(self, fg_color=CARD_BG, corner_radius=10)
+                card = ctk.CTkFrame(self._scroll, fg_color=CARD_BG, corner_radius=10)
                 card.pack(fill="x", pady=3)
 
                 info = ctk.CTkFrame(card, fg_color="transparent")
@@ -151,17 +155,17 @@ class EmployeesPage(BasePage):
         try:
             records = get_attendance(db)
             if not records:
-                ctk.CTkLabel(self, text="لا توجد سجلات", font=("Segoe UI", 15), text_color=TEXT_SEC).pack(pady=40)
+                ctk.CTkLabel(self._scroll, text="لا توجد سجلات", font=("Segoe UI", 15), text_color=TEXT_SEC).pack(pady=40)
                 return
 
-            header = ctk.CTkFrame(self, fg_color=CARD_BG, corner_radius=8)
+            header = ctk.CTkFrame(self._scroll, fg_color=CARD_BG, corner_radius=8)
             header.pack(fill="x", pady=(0, 5))
             ctk.CTkLabel(header, text="الموظف", font=("Segoe UI", 12, "bold"), anchor="e", width=200).pack(side="right", padx=10, pady=8)
             ctk.CTkLabel(header, text="تسجيل دخول", font=("Segoe UI", 12, "bold"), anchor="e", width=180).pack(side="right", padx=10, pady=8)
             ctk.CTkLabel(header, text="تسجيل خروج", font=("Segoe UI", 12, "bold"), anchor="e", width=180).pack(side="right", padx=10, pady=8)
 
             for r in records[:50]:
-                row = ctk.CTkFrame(self, fg_color=CARD_BG, corner_radius=8)
+                row = ctk.CTkFrame(self._scroll, fg_color=CARD_BG, corner_radius=8)
                 row.pack(fill="x", pady=2)
                 name = r.employee.name if r.employee else f"#{r.employee_id}"
                 out = fmt_dt(r.check_out) if r.check_out else "لم يسجل خروج"

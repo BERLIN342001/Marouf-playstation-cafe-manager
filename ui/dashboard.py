@@ -28,7 +28,7 @@ class DashboardPage(BasePage):
             font=("Segoe UI", 16, "bold"), text_color=TEXT, anchor="e"
         ).pack(fill="x", pady=(0, 10))
 
-        self.sessions_container = ctk.CTkFrame(self, fg_color="transparent")
+        self.sessions_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.sessions_container.pack(fill="both", expand=True)
 
         self.stat_cards = []

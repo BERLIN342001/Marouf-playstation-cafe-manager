@@ -378,7 +378,7 @@ class InventoryPage(BasePage):
 
         # ── Low stock section ──
         self.low_stock_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.low_stock_grid = ctk.CTkFrame(self.low_stock_frame, fg_color="transparent")
+        self.low_stock_grid = ctk.CTkScrollableFrame(self.low_stock_frame, fg_color="transparent")
 
         self.low_stock_header = ctk.CTkFrame(self.low_stock_frame, fg_color="transparent")
         self.low_stock_title = ctk.CTkLabel(
@@ -395,7 +395,7 @@ class InventoryPage(BasePage):
 
         # ── Normal items section ──
         self.normal_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.normal_grid = ctk.CTkFrame(self.normal_frame, fg_color="transparent")
+        self.normal_grid = ctk.CTkScrollableFrame(self.normal_frame, fg_color="transparent")
 
         self.normal_header = ctk.CTkFrame(self.normal_frame, fg_color="transparent")
         self.normal_title = ctk.CTkLabel(
@@ -440,7 +440,7 @@ class InventoryPage(BasePage):
         )
         self.low_stock_count.pack(side="right", padx=12)
 
-        self.low_stock_grid = ctk.CTkFrame(self.low_stock_frame, fg_color="transparent")
+        self.low_stock_grid = ctk.CTkScrollableFrame(self.low_stock_frame, fg_color="transparent")
         self.low_stock_grid.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
         # Normal section
@@ -457,7 +457,7 @@ class InventoryPage(BasePage):
         )
         self.normal_count.pack(side="right", padx=12)
 
-        self.normal_grid = ctk.CTkFrame(self.normal_frame, fg_color="transparent")
+        self.normal_grid = ctk.CTkScrollableFrame(self.normal_frame, fg_color="transparent")
         self.normal_grid.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
     def _render_items(self, items):

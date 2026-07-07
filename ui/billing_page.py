@@ -188,7 +188,7 @@ class BillingPage(BasePage):
         ctk.CTkFrame(self, height=1, fg_color=DIVIDER).pack(fill="x", pady=(0, 8))
 
         # ── Payments list container ──
-        self.payments_container = ctk.CTkFrame(self, fg_color="transparent")
+        self.payments_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.payments_container.pack(fill="both", expand=True)
 
         # Empty label

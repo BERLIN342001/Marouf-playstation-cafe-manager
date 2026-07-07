@@ -463,13 +463,13 @@ class SessionsPage(BasePage):
 
         # Active tab
         self.active_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        self.active_cards_grid = ctk.CTkFrame(self.active_frame, fg_color="transparent")
+        self.active_cards_grid = ctk.CTkScrollableFrame(self.active_frame, fg_color="transparent")
         self.active_cards_grid.pack(fill="both", expand=True)
         self.active_cards_grid.grid_columnconfigure((0, 1, 2), weight=1)
 
         # History tab
         self.history_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        self.history_container = ctk.CTkFrame(self.history_frame, fg_color="transparent")
+        self.history_container = ctk.CTkScrollableFrame(self.history_frame, fg_color="transparent")
         self.history_container.pack(fill="both", expand=True)
 
         # Empty labels

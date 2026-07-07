@@ -313,7 +313,7 @@ class ReservationsPage(BasePage):
         ).pack(side="left")
 
         # Cards container
-        self.cards_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.cards_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.cards_frame.pack(fill="both", expand=True)
 
         # Empty label
