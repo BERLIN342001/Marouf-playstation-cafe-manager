@@ -45,8 +45,8 @@ class SettingsPage(BasePage):
         )
         self.seg.pack(fill="x")
 
-        # Content frame
-        self.content = ctk.CTkFrame(self, fg_color="transparent")
+        # Content frame (scrollable)
+        self.content = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.content.pack(fill="both", expand=True)
 
     # ── Tab Router ──
@@ -157,75 +157,71 @@ class SettingsPage(BasePage):
 
         ctk.CTkFrame(card, height=1, fg_color=DIVIDER).pack(fill="x", padx=20)
 
-        # Theme grid
+        # Theme grid — 4 columns
         grid_frame = ctk.CTkFrame(card, fg_color="transparent")
-        grid_frame.pack(fill="x", padx=20, pady=15)
-        grid_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
+        grid_frame.pack(fill="both", expand=True, padx=20, pady=15)
+        for c in range(4):
+            grid_frame.grid_columnconfigure(c, weight=1)
 
         current_theme = self.app.current_theme
-        self._theme_buttons = {}
 
         for i, theme_key in enumerate(THEME_ORDER):
             t = THEMES[theme_key]
             row = i // 4
             col = i % 4
+            is_active = (theme_key == current_theme)
 
             # Theme card
-            is_active = (theme_key == current_theme)
-            border_color = PRIMARY if is_active else DIVIDER
-
+            bw = 3 if is_active else 1
+            bc = PRIMARY if is_active else DIVIDER
             theme_card = ctk.CTkFrame(
                 grid_frame, fg_color=CARD_BG, corner_radius=10,
-                border_width=2 if is_active else 1,
-                border_color=border_color
+                border_width=bw, border_color=bc
             )
-            theme_card.grid(row=row, column=col, padx=8, pady=8, sticky="nsew")
+            theme_card.grid(row=row, column=col, padx=6, pady=6, sticky="nsew")
 
-            # Color preview strip
-            preview = ctk.CTkFrame(theme_card, height=6, corner_radius=3, fg_color=t["PRIMARY"])
-            preview.pack(fill="x", padx=8, pady=(10, 0))
+            # Color preview strip (3 colors)
+            strip = ctk.CTkFrame(theme_card, height=8, corner_radius=4, fg_color="transparent")
+            strip.pack(fill="x", padx=10, pady=(10, 0))
+            strip.grid_columnconfigure((0, 1, 2), weight=1)
+            for ci, ck in enumerate(["SIDEBAR_BG", "PRIMARY", "BG"]):
+                ctk.CTkFrame(strip, corner_radius=4, fg_color=t[ck]).grid(row=0, column=ci, sticky="nsew", padx=1)
 
             # Theme name
             ctk.CTkLabel(
                 theme_card, text=t["label"],
-                font=("Segoe UI", 12, "bold"), text_color=TEXT, anchor="center"
-            ).pack(pady=(8, 2))
+                font=("Segoe UI", 13, "bold"), text_color=TEXT, anchor="center"
+            ).pack(pady=(8, 1))
 
             # Mode badge
-            mode_text = "داكن" if t["mode"] == "dark" else "فاتح"
+            mode_text = "🌙 داكن" if t["mode"] == "dark" else "☀️ فاتح"
             ctk.CTkLabel(
                 theme_card, text=mode_text,
                 font=("Segoe UI", 10), text_color=TEXT_SEC, anchor="center"
-            ).pack(pady=(0, 4))
+            ).pack(pady=(0, 6))
 
-            # Color dots preview
-            dots_frame = ctk.CTkFrame(theme_card, fg_color="transparent")
-            dots_frame.pack(pady=(0, 8))
+            # Color dots
+            dots = ctk.CTkFrame(theme_card, fg_color="transparent")
+            dots.pack(pady=(0, 6))
+            for ck in ["PRIMARY", "SUCCESS", "WARNING", "DANGER"]:
+                ctk.CTkFrame(
+                    dots, width=16, height=16, corner_radius=8, fg_color=t[ck]
+                ).pack(side="right", padx=2)
 
-            for color_key in ["PRIMARY", "SUCCESS", "WARNING", "DANGER"]:
-                dot = ctk.CTkFrame(
-                    dots_frame, width=18, height=18, corner_radius=9,
-                    fg_color=t[color_key]
-                )
-                dot.pack(side="right", padx=3)
-
-            # Select button
+            # Button
             if is_active:
-                btn = ctk.CTkButton(
-                    theme_card, text="✅ نشط", height=30, corner_radius=8,
-                    font=("Segoe UI", 11, "bold"), fg_color=PRIMARY,
+                ctk.CTkButton(
+                    theme_card, text="✅ نشط", height=32, corner_radius=8,
+                    font=("Segoe UI", 12, "bold"), fg_color=SUCCESS,
                     state="disabled"
-                )
+                ).pack(fill="x", padx=10, pady=(2, 10))
             else:
-                btn = ctk.CTkButton(
-                    theme_card, text="اختيار", height=30, corner_radius=8,
-                    font=("Segoe UI", 11), fg_color="transparent",
-                    border_width=1, border_color=PRIMARY,
-                    text_color=PRIMARY, hover_color=PRIMARY,
-                    hover_text_color="white",
+                ctk.CTkButton(
+                    theme_card, text="اختيار", height=32, corner_radius=8,
+                    font=("Segoe UI", 12), fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
+                    text_color="white",
                     command=lambda k=theme_key: self._apply_theme(k)
-                )
-            btn.pack(fill="x", padx=10, pady=(0, 10))
+                ).pack(fill="x", padx=10, pady=(2, 10))
 
     def _apply_theme(self, theme_name):
         """تطبيق الثيم المختار وإعادة بناء الواجهة"""

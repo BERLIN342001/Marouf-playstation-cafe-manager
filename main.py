@@ -212,8 +212,17 @@ class App(ctk.CTk):
         # Apply colors to module globals
         _apply_theme_colors(theme_name)
 
-        # Remember current page
+        # Remember current page and extra context
         saved_key = self.current_page_key or "dashboard"
+        extra = {}
+        # If we're on settings, remember which tab was active
+        if saved_key == "settings" and "settings" in self.pages:
+            try:
+                sp = self.pages["settings"]
+                if hasattr(sp, "seg") and sp.seg.get():
+                    extra["settings_tab"] = sp.seg.get()
+            except Exception:
+                pass
 
         # Destroy all cached pages
         for key in list(self.pages.keys()):
@@ -239,6 +248,16 @@ class App(ctk.CTk):
         self._build_sidebar()
         self._build_content()
         self.show_page(saved_key)
+
+        # Restore settings tab if applicable
+        if saved_key == "settings" and "settings_tab" in extra:
+            try:
+                sp = self.pages.get("settings")
+                if sp and hasattr(sp, "seg"):
+                    sp.seg.set(extra["settings_tab"])
+                    sp._show_tab(extra["settings_tab"])
+            except Exception:
+                pass
 
     # ── Sidebar ──
     def _build_sidebar(self):
